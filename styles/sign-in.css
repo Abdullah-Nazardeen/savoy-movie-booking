@@ -1,0 +1,23 @@
+.rounded {
+    border-radius: 1rem !important;
+  }
+  
+  .shadow {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .main-container {
+    padding: 2rem 0.5rem 3rem 0.5rem !important;
+    height: 90vh !important;
+  }
+
+  .logo {
+    height: 30vh !important;
+  }
+
+  #loginForm {
+    height: 50vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }

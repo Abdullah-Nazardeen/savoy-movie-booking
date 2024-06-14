@@ -1,0 +1,117 @@
+body,
+html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.bg-primary {
+  background-color: #4b0082 !important;
+}
+
+.bg-light {
+  background-color: #e6e6fa !important;
+}
+
+.btn-primary {
+  background-color: #7c5aaa;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: #6b429d;
+}
+
+.btn-primary:active {
+  background-color: #6b429d !important;
+}
+
+.btn-primary::after {
+  background-color: #6b429d !important;
+}
+
+.btn-primary:focus {
+  background-color: #6b429d !important;
+}
+
+.btn-primary:disabled {
+  background-color: #b19fd0;
+  cursor: default;
+}
+
+.text-primary {
+  color: #4b0082 !important;
+}
+
+.text-destruction {
+  color: red !important;
+}
+
+/*Scroll styles*/
+
+.table-container::-webkit-scrollbar {
+  background-color: #fff;
+  width: 16px;
+}
+
+/* background of the scrollbar except button or resizer */
+.table-container::-webkit-scrollbar-track {
+  background-color: #fff;
+}
+
+/* scrollbar itself */
+.table-container::-webkit-scrollbar-thumb {
+  background-color: #e6e6fa;
+  border-radius: 16px;
+  border: 4px solid #fff;
+}
+
+/* set button(top and bottom of the scrollbar) */
+.table-container::-webkit-scrollbar-button {
+  display: none;
+}
+
+/*Table styles*/
+
+.table-container {
+  height: 80vh;
+  width: 100%;
+  overflow-y: scroll;
+}
+
+.table-header {
+  position: sticky;
+  top: 0;
+  background-color: #e6e6fa;
+}
+
+.table-header-row {
+  color: #4b0082;
+}
+
+.table-row {
+  color: #4b0082;
+  vertical-align: middle;
+}
+
+.table-row:hover {
+  background-color: #f2f2fd;
+}
+
+.table-more-option-btn:hover {
+  cursor: pointer;
+}
+
+/*Input field styles*/
+
+.no-glow:focus {
+  box-shadow: none; /* Disable glow */
+  border-color: inherit; /* Optionally maintain original border color */
+}
+
+/*Toast style*/
+
+#toast-placeholder {
+  z-index: 1200;
+}
