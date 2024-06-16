@@ -16,8 +16,9 @@ if ($conn->connect_error) {
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-function get_movie_details($conn, $id, $date_id = null) {
-    $sql = "SELECT id, name, price, duration, image, screen_id, promotion_id FROM movie WHERE id = ?";
+function get_movie_details($conn, $id, $date_id = null)
+{
+    $sql = "SELECT id, name, price, duration, image, screen_id, promotion_id, language_id FROM movie WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -65,9 +66,9 @@ function get_movie_details($conn, $id, $date_id = null) {
         $stmt->close();
 
         // Get languages
-        $sql = "SELECT l.id, l.name FROM language l JOIN movie_language ml ON l.id = ml.language_id WHERE ml.movie_id = ?";
+        $sql = "SELECT l.id, l.name FROM language WHERE id = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $id);
+        $stmt->bind_param("i", $movie['language_id']);
         $stmt->execute();
         $result = $stmt->get_result();
         $movie['languages'] = $result->fetch_all(MYSQLI_ASSOC);
@@ -134,127 +135,273 @@ if ($method === 'GET') {
         }
     }
 } elseif ($method === 'POST') {
-    // Create new movie
-    $data = json_decode(file_get_contents("php://input"), true);
-    $name = $data['name'];
-    $price = $data['price'];
-    $duration = $data['duration'];
-    $image = $data['image'];
-    $screen_id = $data['screen_id'];
-    $promotion_id = isset($data['promotion_id']) ? $data['promotion_id'] : null;
-    $category_ids = $data['category_ids'];
-    $actor_ids = $data['actor_ids'];
-    $language_ids = $data['language_ids'];
-    $dates = $data['dates'];
+    if (isset($_GET['id'])) {
+        $id = intval($_GET['id']);
+        $name = $_POST['name'];
+        $price = $_POST['price'];
+        $duration = $_POST['duration'];
+        $screen_id = $_POST['screen_id'];
+        $language_id = $_POST['language_id'];
+        $promotion_id = isset($_POST['promotion_id']) ? $_POST['promotion_id'] : null;
+        $category_ids = isset($_POST['category_ids']) ? explode(',', $_POST['category_ids']) : [];
+        $actor_ids = isset($_POST['actor_ids']) ? explode(',', $_POST['actor_ids']) : [];
+        $dates = isset($_POST['dates']) ? json_decode($_POST['dates'], true) : [];
+        $image = null;
 
-    $conn->begin_transaction();
-    try {
-        // Insert new movie
-        $sql = "INSERT INTO movie (name, price, duration, image, screen_id, promotion_id) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sdssii", $name, $price, $duration, $image, $screen_id, $promotion_id);
-        $stmt->execute();
-        $movie_id = $stmt->insert_id;
-        $stmt->close();
-
-        // Insert movie categories
-        foreach ($category_ids as $category_id) {
-            $sql = "INSERT INTO movie_category (movie_id, category_id) VALUES (?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ii", $movie_id, $category_id);
-            $stmt->execute();
-            $stmt->close();
+        if (isset($_FILES['image']) && $_FILES['image']['size'] > 0) {
+            $image = file_get_contents($_FILES['image']['tmp_name']);
         }
 
-        // Insert movie actors
-        foreach ($actor_ids as $actor_id) {
-            $sql = "INSERT INTO movie_actor (movie_id, actor_id) VALUES (?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ii", $movie_id, $actor_id);
-            $stmt->execute();
-            $stmt->close();
-        }
-
-        // Insert movie languages
-        foreach ($language_ids as $language_id) {
-            $sql = "INSERT INTO movie_language (movie_id, language_id) VALUES (?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ii", $movie_id, $language_id);
-            $stmt->execute();
-            $stmt->close();
-        }
-
-        // Insert movie dates and seating
-        foreach ($dates as $date) {
-            $start_time = $date['start_time'];
-            $end_time = $date['end_time'];
-
-            // Insert movie date
-            $sql = "INSERT INTO movie_date (movie_id, start_time, end_time) VALUES (?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("iss", $movie_id, $start_time, $end_time);
-            $stmt->execute();
-            $date_id = $stmt->insert_id;
-            $stmt->close();
-
-            // Get seating capacity and code
-            $sql = "SELECT seating_capacity, seating_code FROM screen WHERE id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $screen_id);
-            $stmt->execute();
-            $stmt->bind_result($seating_capacity, $seating_code);
-            $stmt->fetch();
-            $stmt->close();
-
-            // Insert movie seating
-            for ($i = 1; $i <= $seating_capacity; $i++) {
-                $seat_code = $seating_code . '-' . $i;
-                $sql = "INSERT INTO movie_seating (movie_id, screen_id, seat_code, date_id, status) VALUES (?, ?, ?, ?, 'not_booked')";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("iisi", $movie_id, $screen_id, $seat_code, $date_id);
-                $stmt->execute();
-                $stmt->close();
-            }
-
-            // Get parking capacity and code
-            $sql = "SELECT id, parking_capacity, code FROM parking LIMIT 1";
-            $stmt = $conn->prepare($sql);
-            $stmt->execute();
-            $stmt->bind_result($parking_id, $parking_capacity, $parking_code);
-            $stmt->fetch();
-            $stmt->close();
-
-            // Insert movie parking
-            for ($i = 1; $i <= $parking_capacity; $i++) {
-                $parking_slot_code = $parking_code . '-' . $i;
-
-                // Check if the parking slot is already booked
-                $sql = "SELECT status FROM movie_parking mp JOIN movie_date md ON mp.date_id = md.id WHERE mp.movie_id = ? AND mp.parking_code = ? AND md.start_time = ?";
-                $stmt = $conn->prepare($sql);
-                $stmt->bind_param("iss", $movie_id, $parking_slot_code, $start_time);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $existing_parking = $result->fetch_assoc();
-                $stmt->close();
-
-                $status = 'not_booked';
-                if ($existing_parking && $existing_parking['status'] === 'booked') {
-                    $status = 'booked';
+        if ($id > 0 && $name !== '') {
+            $conn->begin_transaction();
+            try {
+                if ($image !== null) {
+                    $sql = "UPDATE movie SET name = ?, price = ?, duration = ?, image = ?, screen_id = ?, promotion_id = ?, language_id = ? WHERE id = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("sdsssii", $name, $price, $duration, $null, $screen_id, $promotion_id, $language_id, $id);
+                    $stmt->send_long_data(3, $image);
+                } else {
+                    $sql = "UPDATE movie SET name = ?, price = ?, duration = ?, screen_id = ?, promotion_id = ?, language_id = ? WHERE id = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("sdssii", $name, $price, $duration, $screen_id, $promotion_id, $language_id, $id);
                 }
 
-                $sql = "INSERT INTO movie_parking (movie_id, parking_id, parking_code, date_id, status) VALUES (?, ?, ?, ?, ?)";
+                $stmt->execute();
+                $stmt->close();
+
+                // Update movie categories
+                $existing_category_ids = [];
+                $sql = "SELECT category_id FROM movie_category WHERE movie_id = ?";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("iisis", $movie_id, $parking_id, $parking_slot_code, $date_id, $status);
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                while ($row = $result->fetch_assoc()) {
+                    $existing_category_ids[] = $row['category_id'];
+                }
+                $stmt->close();
+
+                $new_category_ids = array_diff($category_ids, $existing_category_ids);
+                $removed_category_ids = array_diff($existing_category_ids, $category_ids);
+
+                foreach ($new_category_ids as $category_id) {
+                    $sql = "INSERT INTO movie_category (movie_id, category_id) VALUES (?, ?)";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ii", $id, $category_id);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+
+                foreach ($removed_category_ids as $category_id) {
+                    $sql = "DELETE FROM movie_category WHERE movie_id = ? AND category_id = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ii", $id, $category_id);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+
+                // Update movie actors
+                $existing_actor_ids = [];
+                $sql = "SELECT actor_id FROM movie_actor WHERE movie_id = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                while ($row = $result->fetch_assoc()) {
+                    $existing_actor_ids[] = $row['actor_id'];
+                }
+                $stmt->close();
+
+                $new_actor_ids = array_diff($actor_ids, $existing_actor_ids);
+                $removed_actor_ids = array_diff($existing_actor_ids, $actor_ids);
+
+                foreach ($new_actor_ids as $actor_id) {
+                    $sql = "INSERT INTO movie_actor (movie_id, actor_id) VALUES (?, ?)";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ii", $id, $actor_id);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+
+                foreach ($removed_actor_ids as $actor_id) {
+                    $sql = "DELETE FROM movie_actor WHERE movie_id = ? AND actor_id = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ii", $id, $actor_id);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+
+                // Update movie dates
+                $existing_date_ids = [];
+                $sql = "SELECT id FROM movie_date WHERE movie_id = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                while ($row = $result->fetch_assoc()) {
+                    $existing_date_ids[] = $row['id'];
+                }
+                $stmt->close();
+
+                $incoming_date_ids = array_column($dates, 'id');
+                $new_dates = array_filter($dates, fn ($date) => !isset($date['id']));
+                $existing_dates = array_filter($dates, fn ($date) => isset($date['id']));
+                $removed_date_ids = array_diff($existing_date_ids, $incoming_date_ids);
+
+                foreach ($new_dates as $date) {
+                    $start_time = $date['start_time'];
+                    $end_time = $date['end_time'];
+                    $sql = "INSERT INTO movie_date (movie_id, start_time, end_time) VALUES (?, ?, ?)";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("iss", $id, $start_time, $end_time);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+
+                foreach ($existing_dates as $date) {
+                    $date_id = $date['id'];
+                    $start_time = $date['start_time'];
+                    $end_time = $date['end_time'];
+                    $sql = "UPDATE movie_date SET start_time = ?, end_time = ? WHERE id = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("ssi", $start_time, $end_time, $date_id);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+
+                foreach ($removed_date_ids as $date_id) {
+                    $sql = "DELETE FROM movie_date WHERE id = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $date_id);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+
+                $conn->commit();
+                echo json_encode(['message' => 'Movie updated successfully', 'status' => 'success', 'data' => null]);
+            } catch (Exception $e) {
+                $conn->rollback();
+                echo json_encode(['message' => 'Movie update failed', 'status' => 'error', 'data' => null]);
+            }
+        } else {
+            echo json_encode(['message' => 'Invalid data provided', 'status' => 'error', 'data' => null]);
+        }
+    } else {
+        $name = $_POST['name'];
+        $price = $_POST['price'];
+        $duration = $_POST['duration'];
+        $screen_id = $_POST['screen_id'];
+        $language_id = $_POST['language_id'];
+        $promotion_id = isset($_POST['promotion_id']) ? $_POST['promotion_id'] : null;
+        $category_ids = isset($_POST['category_ids']) ? explode(',', $_POST['category_ids']) : [];
+        $actor_ids = isset($_POST['actor_ids']) ? explode(',', $_POST['actor_ids']) : [];
+        $dates = isset($_POST['dates']) ? json_decode($_POST['dates'], true) : [];
+        $image = null;
+
+        if (isset($_FILES['image']) && $_FILES['image']['size'] > 0) {
+            $image = file_get_contents($_FILES['image']['tmp_name']);
+        }
+
+        $conn->begin_transaction();
+        try {
+            $sql = "INSERT INTO movie (name, price, duration, image, screen_id, promotion_id, language_id = ?) VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("sdssii", $name, $price, $duration, $null, $screen_id, $promotion_id, $language_id);
+            $stmt->send_long_data(3, $image);
+            $stmt->execute();
+            $movie_id = $stmt->insert_id;
+            $stmt->close();
+
+            // Insert movie categories
+            foreach ($category_ids as $category_id) {
+                $sql = "INSERT INTO movie_category (movie_id, category_id) VALUES (?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ii", $movie_id, $category_id);
                 $stmt->execute();
                 $stmt->close();
             }
-        }
 
-        $conn->commit();
-        echo json_encode(['message' => 'Movie created successfully', 'status' => 'success', 'data' => ['id' => $movie_id]]);
-    } catch (Exception $e) {
-        $conn->rollback();
-        echo json_encode(['message' => 'Movie creation failed', 'status' => 'error', 'data' => null]);
+            // Insert movie actors
+            foreach ($actor_ids as $actor_id) {
+                $sql = "INSERT INTO movie_actor (movie_id, actor_id) VALUES (?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ii", $movie_id, $actor_id);
+                $stmt->execute();
+                $stmt->close();
+            }
+
+            // Insert movie dates and seating
+            foreach ($dates as $date) {
+                $start_time = $date['start_time'];
+                $end_time = $date['end_time'];
+
+                // Insert movie date
+                $sql = "INSERT INTO movie_date (movie_id, start_time, end_time) VALUES (?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("iss", $movie_id, $start_time, $end_time);
+                $stmt->execute();
+                $date_id = $stmt->insert_id;
+                $stmt->close();
+
+                // Get seating capacity and code
+                $sql = "SELECT seating_capacity, seating_code FROM screen WHERE id = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $screen_id);
+                $stmt->execute();
+                $stmt->bind_result($seating_capacity, $seating_code);
+                $stmt->fetch();
+                $stmt->close();
+
+                // Insert movie seating
+                for ($i = 1; $i <= $seating_capacity; $i++) {
+                    $seat_code = $seating_code . '-' . $i;
+                    $sql = "INSERT INTO movie_seating (movie_id, screen_id, seat_code, date_id, status) VALUES (?, ?, ?, ?, 'not_booked')";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("iisi", $movie_id, $screen_id, $seat_code, $date_id);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+
+                // Get parking capacity and code
+                $sql = "SELECT id, parking_capacity, code FROM parking LIMIT 1";
+                $stmt = $conn->prepare($sql);
+                $stmt->execute();
+                $stmt->bind_result($parking_id, $parking_capacity, $parking_code);
+                $stmt->fetch();
+                $stmt->close();
+
+                // Insert movie parking
+                for ($i = 1; $i <= $parking_capacity; $i++) {
+                    $parking_slot_code = $parking_code . '-' . $i;
+
+                    // Check if the parking slot is already booked
+                    $sql = "SELECT status FROM movie_parking mp JOIN movie_date md ON mp.date_id = md.id WHERE mp.movie_id = ? AND mp.parking_code = ? AND md.start_time = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("iss", $movie_id, $parking_slot_code, $start_time);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $existing_parking = $result->fetch_assoc();
+                    $stmt->close();
+
+                    $status = 'not_booked';
+                    if ($existing_parking && $existing_parking['status'] === 'booked') {
+                        $status = 'booked';
+                    }
+
+                    $sql = "INSERT INTO movie_parking (movie_id, parking_id, parking_code, date_id, status) VALUES (?, ?, ?, ?, ?)";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("iisis", $movie_id, $parking_id, $parking_slot_code, $date_id, $status);
+                    $stmt->execute();
+                    $stmt->close();
+                }
+            }
+
+            $conn->commit();
+            echo json_encode(['message' => 'Movie created successfully', 'status' => 'success', 'data' => ['id' => $movie_id]]);
+        } catch (Exception $e) {
+            $conn->rollback();
+            echo json_encode(['message' => 'Movie creation failed', 'status' => 'error', 'data' => null]);
+        }
     }
 } elseif ($method === 'PUT') {
     // Update movie
@@ -386,8 +533,8 @@ if ($method === 'GET') {
         $stmt->close();
 
         $incoming_date_ids = array_column($dates, 'id');
-        $new_dates = array_filter($dates, fn($date) => !isset($date['id']));
-        $existing_dates = array_filter($dates, fn($date) => isset($date['id']));
+        $new_dates = array_filter($dates, fn ($date) => !isset($date['id']));
+        $existing_dates = array_filter($dates, fn ($date) => isset($date['id']));
         $removed_date_ids = array_diff($existing_date_ids, $incoming_date_ids);
 
         foreach ($new_dates as $date) {
@@ -463,4 +610,3 @@ if ($method === 'GET') {
 }
 
 $conn->close();
-?>
