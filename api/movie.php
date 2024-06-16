@@ -28,6 +28,11 @@ function get_movie_details($conn, $id, $date_id = null)
 
     if ($movie) {
         // Get screen details
+        
+        if ($movie['image']) {
+            $movie['image'] = base64_encode($movie['image']);
+        }
+        
         $sql = "SELECT id, name, seating_capacity, seating_code FROM screen WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $movie['screen_id']);
@@ -62,11 +67,19 @@ function get_movie_details($conn, $id, $date_id = null)
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
-        $movie['actors'] = $result->fetch_all(MYSQLI_ASSOC);
+        $actors = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
+        foreach ($actors as &$actor) {
+            if ($actor['image']) {
+                $actor['image'] = base64_encode($actor['image']);
+            }
+        }
+
+        $movie['actors'] = $actors;
+
         // Get languages
-        $sql = "SELECT l.id, l.name FROM language WHERE id = ?";
+        $sql = "SELECT id, name FROM language WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $movie['language_id']);
         $stmt->execute();
@@ -103,7 +116,7 @@ function get_movie_details($conn, $id, $date_id = null)
             $stmt->close();
         }
     }
-
+    error_log("MOVIE ID: " . $id . " MOVIE DATA: " . print_r($movie, true));
     return $movie;
 }
 
@@ -127,7 +140,7 @@ if ($method === 'GET') {
         if ($result->num_rows > 0) {
             $movies = [];
             while ($row = $result->fetch_assoc()) {
-                $movies[] = get_movie_details($conn, $row['id']);
+                $movies[] = get_movie_details($conn, $row['id'], null);
             }
             echo json_encode(['message' => 'Movies retrieved successfully', 'status' => 'success', 'data' => $movies]);
         } else {
@@ -158,12 +171,13 @@ if ($method === 'GET') {
                 if ($image !== null) {
                     $sql = "UPDATE movie SET name = ?, price = ?, duration = ?, image = ?, screen_id = ?, promotion_id = ?, language_id = ? WHERE id = ?";
                     $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("sdsssii", $name, $price, $duration, $null, $screen_id, $promotion_id, $language_id, $id);
+                    $null = NULL;
+                    $stmt->bind_param("sdsbsiii", $name, $price, $duration, $null, $screen_id, $promotion_id, $language_id, $id);
                     $stmt->send_long_data(3, $image);
                 } else {
                     $sql = "UPDATE movie SET name = ?, price = ?, duration = ?, screen_id = ?, promotion_id = ?, language_id = ? WHERE id = ?";
                     $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("sdssii", $name, $price, $duration, $screen_id, $promotion_id, $language_id, $id);
+                    $stmt->bind_param("sdsiii", $name, $price, $duration, $screen_id, $promotion_id, $language_id, $id);
                 }
 
                 $stmt->execute();
@@ -281,7 +295,7 @@ if ($method === 'GET') {
                 echo json_encode(['message' => 'Movie updated successfully', 'status' => 'success', 'data' => null]);
             } catch (Exception $e) {
                 $conn->rollback();
-                echo json_encode(['message' => 'Movie update failed', 'status' => 'error', 'data' => null]);
+                echo json_encode(['message' => 'Movie update failed', 'status' => 'error', 'data' => null, 'error' => $e->getMessage()]);
             }
         } else {
             echo json_encode(['message' => 'Invalid data provided', 'status' => 'error', 'data' => null]);
@@ -304,10 +318,18 @@ if ($method === 'GET') {
 
         $conn->begin_transaction();
         try {
-            $sql = "INSERT INTO movie (name, price, duration, image, screen_id, promotion_id, language_id = ?) VALUES (?, ?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sdssii", $name, $price, $duration, $null, $screen_id, $promotion_id, $language_id);
-            $stmt->send_long_data(3, $image);
+            if ($image !== null) {
+                $sql = "INSERT INTO movie (name, price, duration, image, screen_id, promotion_id, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $null = NULL;
+                $stmt->bind_param("sdsbiii", $name, $price, $duration, $null, $screen_id, $promotion_id, $language_id);
+                $stmt->send_long_data(3, $image);
+            } else {
+                $sql = "INSERT INTO movie (name, price, duration, screen_id, promotion_id, language_id) VALUES (?, ?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("sdsiii", $name, $price, $duration, $screen_id, $promotion_id, $language_id);
+            }
+
             $stmt->execute();
             $movie_id = $stmt->insert_id;
             $stmt->close();
@@ -332,8 +354,8 @@ if ($method === 'GET') {
 
             // Insert movie dates and seating
             foreach ($dates as $date) {
-                $start_time = $date['start_time'];
-                $end_time = $date['end_time'];
+                $start_time = (new DateTime($date['start_time']))->format('Y-m-d H:i:s');
+                $end_time = (new DateTime($date['end_time']))->format('Y-m-d H:i:s');
 
                 // Insert movie date
                 $sql = "INSERT INTO movie_date (movie_id, start_time, end_time) VALUES (?, ?, ?)";
@@ -400,7 +422,8 @@ if ($method === 'GET') {
             echo json_encode(['message' => 'Movie created successfully', 'status' => 'success', 'data' => ['id' => $movie_id]]);
         } catch (Exception $e) {
             $conn->rollback();
-            echo json_encode(['message' => 'Movie creation failed', 'status' => 'error', 'data' => null]);
+            error_log($e->getMessage(), 3, 'error_log.txt');
+            echo json_encode(['message' => 'Movie creation failed', 'status' => 'error', 'data' => null, 'error' => $e->getMessage()]);
         }
     }
 } elseif ($method === 'PUT') {

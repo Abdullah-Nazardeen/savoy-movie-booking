@@ -112,19 +112,6 @@
                   />
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label for="movie-price" class="form-label text-primary"
-                    >Price</label
-                  >
-                  <input
-                    type="number"
-                    class="form-control no-glow"
-                    id="movie-price"
-                    placeholder="Ex: 10"
-                  />
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-6 mb-3">
                   <label for="movie-duration" class="form-label text-primary"
                     >Duration</label
                   >
@@ -135,17 +122,57 @@
                     placeholder="Ex: 2h 30m"
                   />
                 </div>
-                <div class="col-md-6 mb-3" id="image-field">
-                  <label for="movie-image" class="form-label text-primary"
-                    >Image</label
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="movie-price" class="form-label text-primary"
+                    >Price</label
                   >
                   <input
-                    type="file"
+                    type="number"
                     class="form-control no-glow"
-                    id="movie-image"
-                    accept="image/*"
+                    id="movie-price"
+                    placeholder="Ex: 10"
                   />
                 </div>
+                <div class="col-md-6 mb-3">
+                  <label for="movie-promotion" class="form-label text-primary"
+                    >Promotion</label
+                  >
+                  <select
+                    id="movie-promotion"
+                    class="form-select no-glow"
+                  ></select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label for="movie-screen" class="form-label text-primary"
+                    >Screen</label
+                  >
+                  <select id="movie-screen" class="form-select no-glow"></select>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label for="movie-language" class="form-label text-primary"
+                    >Language</label
+                  >
+                  <select
+                    id="movie-language"
+                    class="form-select no-glow"
+                  ></select>
+                </div>
+              </div>
+              
+              <div class="mb-3" id="image-field">
+                <label for="movie-image" class="form-label text-primary"
+                  >Image</label
+                >
+                <input
+                  type="file"
+                  class="form-control no-glow"
+                  id="movie-image"
+                  accept="image/*"
+                />
               </div>
               <div class="image-container">
                 <div class="mb-3 d-none" id="image-preview">
@@ -164,17 +191,9 @@
                   </button>
                 </div>
               </div>
+              
               <div class="mb-3">
-                <label for="movie-language" class="form-label text-primary"
-                  >Language</label
-                >
-                <select
-                  id="movie-language"
-                  class="form-select no-glow"
-                ></select>
-              </div>
-              <div class="mb-3">
-                <label for="movie-category">Categories</label>
+                <label for="movie-category" class="form-label text-primary">Categories</label>
                 <select
                   id="movie-category"
                   name="categories"
@@ -183,12 +202,7 @@
                   data-multi-select
                 ></select>
               </div>
-              <div class="mb-3">
-                <label for="movie-screen" class="form-label text-primary"
-                  >Screen</label
-                >
-                <select id="movie-screen" class="form-select no-glow"></select>
-              </div>
+              
               <div class="mb-3">
                 <label for="movie-actors" class="form-label text-primary"
                   >Actors</label
@@ -201,15 +215,7 @@
                   data-multi-select
                 ></select>
               </div>
-              <div class="mb-3">
-                <label for="movie-promotion" class="form-label text-primary"
-                  >Promotion</label
-                >
-                <select
-                  id="movie-promotion"
-                  class="form-select no-glow"
-                ></select>
-              </div>
+
               <div id="movie-schedule-container">
                 <div class="row mb-3" id="schedule-row-1">
                   <div class="col-md-6">
@@ -222,17 +228,23 @@
                       id="schedule-date-1"
                     />
                   </div>
-                  <div class="col-md-4">
+                  <div class="col-md-5">
                     <label for="schedule-time-1" class="form-label text-primary"
                       >Time</label
                     >
                     <select class="form-select no-glow" id="schedule-time-1">
-                      <option value="9:00 am - 1:00 pm">9:00 am - 1:00 pm</option>
-                      <option value="1:00 pm - 5:00 pm">1:00 pm - 5:00 pm</option>
-                      <option value="5:00 pm - 9:00 pm">5:00 pm - 9:00 pm</option>
+                      <option value="9:00 am - 1:00 pm">
+                        9:00 am - 1:00 pm
+                      </option>
+                      <option value="1:00 pm - 5:00 pm">
+                        1:00 pm - 5:00 pm
+                      </option>
+                      <option value="5:00 pm - 9:00 pm">
+                        5:00 pm - 9:00 pm
+                      </option>
                     </select>
                   </div>
-                  <div class="col-md-2 d-flex align-items-end">
+                  <div class="col-md-1 d-flex align-items-end">
                     <button
                       type="button"
                       class="btn btn-danger btn-sm"

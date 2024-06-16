@@ -43,7 +43,12 @@ function fetchMovies() {
   isLoading = true;
   setLoadingUI(true);
   fetch("http://localhost/savoy-movie-booking/api/movie.php")
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json();
+    })
     .then((data) => {
       movies = data.data || [];
       displayMovies(movies);
@@ -181,7 +186,7 @@ function openCreateModal() {
         <label for="schedule-date-1" class="form-label text-primary">Date</label>
         <input type="date" class="form-control no-glow" id="schedule-date-1"/>
       </div>
-      <div class="col-md-4">
+      <div class="col-md-5">
         <label for="schedule-time-1" class="form-label text-primary">Time</label>
         <select class="form-select no-glow" id="schedule-time-1">
           <option value="9:00 am - 1:00 pm">9:00 am - 1:00 pm</option>
@@ -189,7 +194,7 @@ function openCreateModal() {
           <option value="5:00 pm - 9:00 pm">5:00 pm - 9:00 pm</option>
         </select>
       </div>
-      <div class="col-md-2 d-flex align-items-end">
+      <div class="col-md-1 d-flex align-items-end">
         <button type="button" class="btn btn-danger btn-sm" id="delete-schedule-btn-1" disabled>
           <i class="bi bi-trash"></i>
         </button>
@@ -264,18 +269,18 @@ function addScheduleRow() {
   row.id = `schedule-row-${scheduleCount}`;
   row.innerHTML = `
     <div class="col-md-6">
-      <label for="schedule-date-${scheduleCount}" class="form-label text-primary">Date</label>
+
       <input type="date" class="form-control no-glow" id="schedule-date-${scheduleCount}"/>
     </div>
-    <div class="col-md-4">
-      <label for="schedule-time-${scheduleCount}" class="form-label text-primary">Time</label>
+    <div class="col-md-5">
+ 
       <select class="form-select no-glow" id="schedule-time-${scheduleCount}">
-        <option value="9am - 1pm">9am - 1pm</option>
-        <option value="1pm - 5pm">1pm - 5pm</option>
-        <option value="5pm - 9pm">5pm - 9pm</option>
+        <option value="9:00 am - 1:00 pm">9:00 am - 1:00 pm</option>
+        <option value="1:00 pm - 5:00 pm">1:00 pm - 5:00 pm</option>
+        <option value="5:00 pm - 9:00 pm">5:00 pm - 9:00 pm</option>
       </select>
     </div>
-    <div class="col-md-2 d-flex align-items-end">
+    <div class="col-md-1 d-flex align-items-end">
       <button type="button" class="btn btn-danger btn-sm delete-schedule-btn">
         <i class="bi bi-trash"></i>
       </button>
@@ -338,15 +343,16 @@ function saveMovie() {
     formData.append("promotion_id", promotion);
     formData.append("category_ids", selectedCategories.join(","));
     formData.append("actor_ids", selectedActors.join(","));
-    formData.append("schedules", JSON.stringify(schedules));
-
+    formData.append("dates", JSON.stringify(schedules));
+    console.log("SELECTED CATEGORIES", selectedCategories)
+    console.log("SELECTED ACTORS", selectedActors)
     if (image) {
       formData.append("image", image);
     }
     if (id) {
       formData.append("id", id);
     }
-
+    console.log("formData", formData)
     const method = id ? "PUT" : "POST";
     const url = id
       ? `http://localhost/savoy-movie-booking/api/movie.php?id=${id}`
@@ -359,11 +365,11 @@ function saveMovie() {
     })
       .then((response) => response.json())
       .then((data) => {
-        const modal = bootstrap.Modal.getInstance(
-          document.getElementById("editModal")
-        );
-        modal.hide();
-        fetchMovies();
+        // const modal = bootstrap.Modal.getInstance(
+        //   document.getElementById("editModal")
+        // );
+        // modal.hide();
+        // fetchMovies();
       })
       .catch((error) => console.error("Error saving movie:", error))
       .finally(() => {

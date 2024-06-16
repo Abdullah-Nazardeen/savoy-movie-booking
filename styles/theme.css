@@ -40,6 +40,34 @@ html {
   cursor: default;
 }
 
+.btn-secondary {
+  background-color: white;
+  border: 1px solid #6b429d;
+  cursor: pointer;
+  color: #6b429d !important;
+}
+
+.btn-secondary:hover {
+  background-color: #f2f2fd;
+}
+
+.btn-secondary:active {
+  background-color: #f2f2fd !important;
+}
+
+.btn-secondary::after {
+  background-color: #f2f2fd !important;
+}
+
+.btn-secondary:focus {
+  background-color: #f2f2fd !important;
+}
+
+.btn-secondary:disabled {
+  background-color: white;
+  cursor: default;
+}
+
 .text-primary {
   color: #4b0082 !important;
 }
