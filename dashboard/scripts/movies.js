@@ -8,6 +8,8 @@ let existingImage = null;
 let scheduleCount = 1;
 let selectedCategories = [];
 let selectedActors = [];
+// let existingActorIds = [];
+// let existingCategoryIds = [];
 
 const tableBody = document.getElementById("table-body");
 const searchInput = document.getElementById("search-input");
@@ -63,29 +65,57 @@ function fetchMovies() {
 function setLoadingUI(isLoading) {
   if (isLoading) {
     tableBody.innerHTML =
-      '<tr><td colspan="3" class="text-center">Loading...</td></tr>';
+      '<tr><td colspan="6" class="text-center">Loading...</td></tr>';
   } else if (movies.length === 0) {
     tableBody.innerHTML =
-      '<tr><td colspan="3" class="text-center">No movies available</td></tr>';
+      '<tr><td colspan="6" class="text-center">No movies available</td></tr>';
   }
 }
 
 function displayMovies(movies) {
   tableBody.innerHTML = "";
+
   movies.forEach((movie, index) => {
+    const categoryIds = movie.categories.map((cat) => cat.id);
+    const actorIds = movie.actors.map((actor) => actor.id);
+    const dateIdArray = movie.dates.map((date) => date.id);
+    const startTimeArray = movie.dates.map((date) => date.start_time);
     const avatar = movie.image
       ? `<img src="data:image/jpeg;base64,${movie.image}" class="avatar" alt="Avatar" />`
       : `<div class="avatar-placeholder">${movie.name
           .charAt(0)
           .toUpperCase()}</div>`;
 
+    const categories = movie.categories
+      .slice(0, 3)
+      .map((category) => `<span class="badge">${category}</span>`)
+      .join("");
+    const categoriesBadge =
+      movie.categories.length > 3 ? `<span class="badge">...</span>` : "";
+
+    const actors = movie.actors
+      .slice(0, 3)
+      .map((actor) => `<span class="badge">${actor}</span>`)
+      .join("");
+    const actorsBadge =
+      movie.actors.length > 3 ? `<span class="badge">...</span>` : "";
+
+    const dates = movie.dates
+      .slice(0, 3)
+      .map((date) => `<span class="badge">${date.start_time}</span>`)
+      .join("");
+    const datesBadge =
+      movie.dates.length > 3 ? `<span class="badge">...</span>` : "";
+
     const row = document.createElement("tr");
     row.classList.add("table-row");
     row.innerHTML = `
       <td>${avatar}</td>
       <td>${movie.name}</td>
-      <td>${movie.price}</td>
-      <td>${movie.duration}</td>
+      <td>${movie.screen.name}</td>
+      <td>${movie.price}</td>     
+      <td>${movie.promotion.discount}%</td>
+      <td>${dates}${datesBadge}</td>
       <td>
         <i class="bi bi-three-dots table-more-option-btn" data-id="${
           movie.id
@@ -93,7 +123,11 @@ function displayMovies(movies) {
       movie.price
     }" data-duration="${movie.duration}" data-image="${
       movie.image || ""
-    }" tabindex="0"></i>
+    }" data-promotion="${movie.promotion_id}" data-language="${
+      movie.language_id
+    }" data-screen="${
+      movie.screen_id
+    }" data-date="${dateIdArray}" data-time="${startTimeArray}" data-category="${categoryIds}" data-actor="${actorIds}" tabindex="0"></i>
       </td>
     `;
     tableBody.appendChild(row);
@@ -118,6 +152,13 @@ function openMoreOptions(event) {
   const name = event.target.dataset.name;
   const price = event.target.dataset.price;
   const duration = event.target.dataset.duration;
+  const promotion = event.target.dataset.promotion;
+  const language = event.target.dataset.language;
+  const screen = event.target.dataset.screen;
+  const dateIds = event.target.dataset.date;
+  const startTimes = event.target.dataset.time;
+  const category = event.target.dataset.category;
+  const actor = event.target.dataset.actor;
   const image = event.target.dataset.image;
 
   if (activePopover) {
@@ -129,7 +170,7 @@ function openMoreOptions(event) {
   const popoverContent = document.createElement("div");
   popoverContent.classList.add = "popover-body";
   popoverContent.innerHTML = `
-      <button class="dropdown-item edit-btn text-primary" data-id="${id}" data-name="${name}" data-price="${price}" data-duration="${duration}" data-image="${image}">Edit</button>
+      <button class="dropdown-item edit-btn text-primary" data-id="${id}" data-name="${name}" data-price="${price}" data-duration="${duration}" data-image="${image}" data-promotion="${promotion}" data-language="${language}" data-screen="${screen}" data-date="${dateIds}" data-time="${startTimes}" data-category="${category}" data-actor="${actor}">Edit</button>
       <button class="dropdown-item delete-btn text-destruction" data-id="${id}">Delete</button>
     `;
 
@@ -188,6 +229,7 @@ function openCreateModal() {
       </div>
       <div class="col-md-5">
         <label for="schedule-time-1" class="form-label text-primary">Time</label>
+        <input type="hidden" id="schedule-id-1" />
         <select class="form-select no-glow" id="schedule-time-1">
           <option value="9:00 am - 1:00 pm">9:00 am - 1:00 pm</option>
           <option value="1:00 pm - 5:00 pm">1:00 pm - 5:00 pm</option>
@@ -213,13 +255,58 @@ function openEditModal(event) {
   const price = event.target.dataset.price;
   const duration = event.target.dataset.duration;
   const image = event.target.dataset.image;
+  const promotion = event.target.dataset.promotion;
+  const language = event.target.dataset.language;
+  const screen = event.target.dataset.screen;
+  const dateIds = event.target.dataset.date;
+  const startTimes = event.target.dataset.time;
+  const category = event.target.dataset.category;
+  const actor = event.target.dataset.actor;
+  const dateArray = dateIds.split(",");
+  const startTimesArray = startTimes.split(",");
+
+  selectedActors = [...actor]
+  selectedCategories = [...category]
+
+  const existingDates = dateArray.flatMap((id, index) => {
+    return { id: id, start_time: startTimesArray[index] };
+  });
+
+  console.log("dateArray", existingDates);
+  existingDates.forEach((date, index) => {
+    const year = date.start_time.split(" ")[0];
+    const time = date.start_time.split(" ")[1];
+    console.log("date.id", date.id);
+    console.log("year", year);
+    console.log("time", time);
+    let timeInterval;
+    if (time === "09:00:00") {
+      timeInterval = "9:00 am - 1:00 pm";
+    } else if (time === "13:00:00") {
+      timeInterval = "1:00 pm - 5:00 pm";
+    } else if (time === "17:00:00") {
+      timeInterval = "5:00 pm - 9:00 pm";
+    }
+    if (dateArray.length - 1 !== index) {
+      addScheduleRow();
+
+      document.getElementById(`schedule-id-${index + 1}`).value = date.id;
+      document.getElementById(`schedule-time-${index + 1}`).value =
+        timeInterval;
+      document.getElementById(`schedule-date-${index + 1}`).value = year;
+    } else {
+      document.getElementById(`schedule-id-${index + 1}`).value = date.id;
+      document.getElementById(`schedule-time-${index + 1}`).value =
+        timeInterval;
+      document.getElementById(`schedule-date-${index + 1}`).value = year;
+    }
+  });
 
   document.getElementById("editModalLabel").innerText = "Edit Movie";
   document.getElementById("movie-name").value = name;
   document.getElementById("movie-price").value = price;
   document.getElementById("movie-duration").value = duration;
   document.getElementById("movie-id").value = id;
-
   if (image) {
     previewImg.src = `data:image/jpeg;base64,${image}`;
     existingImage = `data:image/jpeg;base64,${image}`;
@@ -230,7 +317,7 @@ function openEditModal(event) {
     imageField.classList.remove("d-none");
     imagePreview.classList.add("d-none");
   }
-  fetchDropdownData();
+  fetchDropdownData(category, actor, language, screen, promotion);
   const modal = new bootstrap.Modal(document.getElementById("editModal"));
   modal.show();
 }
@@ -273,7 +360,7 @@ function addScheduleRow() {
       <input type="date" class="form-control no-glow" id="schedule-date-${scheduleCount}"/>
     </div>
     <div class="col-md-5">
- 
+      <input type="hidden" id="schedule-id-${scheduleCount}" />
       <select class="form-select no-glow" id="schedule-time-${scheduleCount}">
         <option value="9:00 am - 1:00 pm">9:00 am - 1:00 pm</option>
         <option value="1:00 pm - 5:00 pm">1:00 pm - 5:00 pm</option>
@@ -304,24 +391,37 @@ function saveMovie() {
   const schedules = [];
 
   for (let i = 1; i <= scheduleCount; i++) {
+    console.log("scheduleCount", scheduleCount)
     const date = document.getElementById(`schedule-date-${i}`).value;
     const timeRange = document.getElementById(`schedule-time-${i}`).value;
+    const id = document.getElementById(`schedule-id-${i}`).value;
 
     if (date && timeRange) {
       const [startTime, endTime] = timeRange.split(" - ");
       console.log(
-        "`${date} ${convertTo24Hour(startTime)}`",
-        `${date} ${convertTo24Hour(startTime)}`
+        "`${date} ${convertTime(startTime)}`",
+        `${date} ${convertTime(startTime)}`
       );
       const startTimestamp = new Date(
-        `${date} ${convertTo24Hour(startTime)}`
+        `${date} ${convertTime(startTime)}`
       ).toISOString();
       const endTimestamp = new Date(
-        `${date} ${convertTo24Hour(endTime)}`
+        `${date} ${convertTime(endTime)}`
       ).toISOString();
-      schedules.push({ start_time: startTimestamp, end_time: endTimestamp });
+      schedules.push({ id: id, start_time: startTimestamp, end_time: endTimestamp });
     }
   }
+
+  console.log("name", name)
+  console.log("price", price)
+  console.log("duration", duration)
+  console.log("language", language)
+  console.log("screen", screen)
+  console.log("image", image)
+  console.log("existingImage", existingImage)
+  console.log("selectedCategories.length", selectedCategories.length)
+  console.log("selectedActors.length ", selectedActors.length )
+  console.log("schedules.length", schedules.length)
 
   if (
     name &&
@@ -344,15 +444,15 @@ function saveMovie() {
     formData.append("category_ids", selectedCategories.join(","));
     formData.append("actor_ids", selectedActors.join(","));
     formData.append("dates", JSON.stringify(schedules));
-    console.log("SELECTED CATEGORIES", selectedCategories)
-    console.log("SELECTED ACTORS", selectedActors)
+    console.log("SELECTED CATEGORIES", selectedCategories);
+    console.log("SELECTED ACTORS", selectedActors);
     if (image) {
       formData.append("image", image);
     }
     if (id) {
       formData.append("id", id);
     }
-    console.log("formData", formData)
+    console.log("formData", formData);
     const method = id ? "PUT" : "POST";
     const url = id
       ? `http://localhost/savoy-movie-booking/api/movie.php?id=${id}`
@@ -365,11 +465,11 @@ function saveMovie() {
     })
       .then((response) => response.json())
       .then((data) => {
-        // const modal = bootstrap.Modal.getInstance(
-        //   document.getElementById("editModal")
-        // );
-        // modal.hide();
-        // fetchMovies();
+        const modal = bootstrap.Modal.getInstance(
+          document.getElementById("editModal")
+        );
+        modal.hide();
+        fetchMovies();
       })
       .catch((error) => console.error("Error saving movie:", error))
       .finally(() => {
@@ -380,7 +480,19 @@ function saveMovie() {
   }
 }
 
-function convertTo24Hour(time) {
+function convertTime(time) {
+  if (time === "9:00 am") {
+    return "14:30";
+  } else if (time === "1:00 pm") {
+    return "18:30";
+  } else if (time === "5:00 pm") {
+    return "22:30";
+  } else if (time === "9:00 pm") {
+    return "02:30";
+  }
+}
+
+function convertTo24Time(time) {
   const [timePart, modifier] = time.split(" ");
   console.log("TIMEPART", timePart, modifier);
   let [hours, minutes] = timePart.split(":");
@@ -413,16 +525,26 @@ function deleteMovie() {
     });
 }
 
-function fetchDropdownData() {
+function fetchDropdownData(
+  existingCategoryIds = [],
+  existingActorIds = [],
+  languageId = "",
+  screenId = "",
+  promotionId = ""
+) {
   fetch("http://localhost/savoy-movie-booking/api/category.php")
     .then((response) => response.json())
     .then((data) => {
       // Initialize the MultiSelect dropdown for categories
       new MultiSelect("#movie-category", {
-        data: data.data.map((category) => ({
-          value: category.id,
-          text: category.name,
-        })),
+        data: data.data.map((category) => {
+          const isSelected = existingCategoryIds.includes(category.id);
+          return {
+            value: category.id,
+            text: category.name,
+            ...(isSelected && { selected: true }),
+          };
+        }),
         placeholder: "Select categories",
         search: true,
         selectAll: false,
@@ -441,10 +563,14 @@ function fetchDropdownData() {
     .then((data) => {
       // Initialize the MultiSelect dropdown for actors
       new MultiSelect("#movie-actors", {
-        data: data.data.map((actor) => ({
-          value: actor.id,
-          text: actor.name,
-        })),
+        data: data.data.map((actor) => {
+          const isSelected = existingActorIds.includes(actor.id);
+          return {
+            value: actor.id,
+            text: actor.name,
+            ...(isSelected && { selected: true }),
+          };
+        }),
         placeholder: "Select actors",
         search: true,
         selectAll: false,
@@ -463,10 +589,12 @@ function fetchDropdownData() {
     .then((data) => {
       const languageSelect = document.getElementById("movie-language");
       languageSelect.innerHTML = data.data
-        .map(
-          (language) =>
-            `<option value="${language.id}">${language.name}</option>`
-        )
+        .map((language) => {
+          const isSelected = language.id === languageId;
+          return `<option value="${language.id}" ${
+            isSelected ? "selected" : ""
+          }>${language.name}</option>`;
+        })
         .join("");
     });
 
@@ -475,10 +603,12 @@ function fetchDropdownData() {
     .then((data) => {
       const promotionSelect = document.getElementById("movie-promotion");
       promotionSelect.innerHTML = data.data
-        .map(
-          (promotion) =>
-            `<option value="${promotion.id}">${promotion.name}</option>`
-        )
+        .map((promotion) => {
+          const isSelected = promotion.id === promotionId;
+          return `<option value="${promotion.id}" ${
+            isSelected ? "selected" : ""
+          }>${promotion.name}</option>`;
+        })
         .join("");
     });
 
@@ -487,7 +617,12 @@ function fetchDropdownData() {
     .then((data) => {
       const screenSelect = document.getElementById("movie-screen");
       screenSelect.innerHTML = data.data
-        .map((screen) => `<option value="${screen.id}">${screen.name}</option>`)
+        .map((screen) => {
+          const isSelected = screen.id === screenId;
+          return `<option value="${screen.id}" ${
+            isSelected ? "selected" : ""
+          }>${screen.name}</option>`;
+        })
         .join("");
     });
 }

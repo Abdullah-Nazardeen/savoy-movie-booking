@@ -58,12 +58,10 @@
         <table class="table">
           <thead class="table-header">
             <tr class="table-header-row">
-              <th scope="col">#</th>
+              <th scope="col"></th>
               <th scope="col">Name</th>
-              <th scope="col">Price</th>
               <th scope="col">Screen</th>
-              <th scope="col">Categories</th>
-              <th scope="col">Languages</th>
+              <th scope="col">Price</th>
               <th scope="col">Discount</th>
               <th scope="col">Date's</th>
               <th scope="col"></th>
@@ -85,7 +83,7 @@
       aria-hidden="true"
     >
       <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
+        <div class="modal-content movie-modal-content">
           <div class="modal-header">
             <h5 class="modal-title text-primary" id="editModalLabel">
               Edit Movie
@@ -150,7 +148,10 @@
                   <label for="movie-screen" class="form-label text-primary"
                     >Screen</label
                   >
-                  <select id="movie-screen" class="form-select no-glow"></select>
+                  <select
+                    id="movie-screen"
+                    class="form-select no-glow"
+                  ></select>
                 </div>
                 <div class="col-md-6 mb-3">
                   <label for="movie-language" class="form-label text-primary"
@@ -162,7 +163,7 @@
                   ></select>
                 </div>
               </div>
-              
+
               <div class="mb-3" id="image-field">
                 <label for="movie-image" class="form-label text-primary"
                   >Image</label
@@ -191,9 +192,11 @@
                   </button>
                 </div>
               </div>
-              
+
               <div class="mb-3">
-                <label for="movie-category" class="form-label text-primary">Categories</label>
+                <label for="movie-category" class="form-label text-primary"
+                  >Categories</label
+                >
                 <select
                   id="movie-category"
                   name="categories"
@@ -202,7 +205,7 @@
                   data-multi-select
                 ></select>
               </div>
-              
+
               <div class="mb-3">
                 <label for="movie-actors" class="form-label text-primary"
                   >Actors</label
@@ -232,6 +235,7 @@
                     <label for="schedule-time-1" class="form-label text-primary"
                       >Time</label
                     >
+                    <input type="hidden" id="schedule-id-1" />
                     <select class="form-select no-glow" id="schedule-time-1">
                       <option value="9:00 am - 1:00 pm">
                         9:00 am - 1:00 pm
