@@ -18,7 +18,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 function get_movie_details($conn, $id, $date_id = null)
 {
-    $sql = "SELECT id, name, price, duration, image, screen_id, promotion_id, language_id FROM movie WHERE id = ?";
+    $sql = "SELECT id, name, price, description, duration, image, screen_id, promotion_id, language_id FROM movie WHERE id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $id);
     $stmt->execute();
@@ -152,6 +152,7 @@ if ($method === 'GET') {
         $id = intval($_GET['id']);
         $name = $_POST['name'];
         $price = $_POST['price'];
+        $description = $_POST['description'];
         $duration = $_POST['duration'];
         $screen_id = $_POST['screen_id'];
         $language_id = $_POST['language_id'];
@@ -169,15 +170,15 @@ if ($method === 'GET') {
             $conn->begin_transaction();
             try {
                 if ($image !== null) {
-                    $sql = "UPDATE movie SET name = ?, price = ?, duration = ?, image = ?, screen_id = ?, promotion_id = ?, language_id = ? WHERE id = ?";
+                    $sql = "UPDATE movie SET name = ?, price = ?, description = ?, duration = ?, image = ?, screen_id = ?, promotion_id = ?, language_id = ? WHERE id = ?";
                     $stmt = $conn->prepare($sql);
                     $null = NULL;
-                    $stmt->bind_param("sdsbsiii", $name, $price, $duration, $null, $screen_id, $promotion_id, $language_id, $id);
-                    $stmt->send_long_data(3, $image);
+                    $stmt->bind_param("sdssbsiiii", $name, $price, $description, $duration, $null, $screen_id, $promotion_id, $language_id, $id);
+                    $stmt->send_long_data(4, $image);
                 } else {
-                    $sql = "UPDATE movie SET name = ?, price = ?, duration = ?, screen_id = ?, promotion_id = ?, language_id = ? WHERE id = ?";
+                    $sql = "UPDATE movie SET name = ?, price = ?, description = ?, duration = ?, screen_id = ?, promotion_id = ?, language_id = ? WHERE id = ?";
                     $stmt = $conn->prepare($sql);
-                    $stmt->bind_param("sdsiii", $name, $price, $duration, $screen_id, $promotion_id, $language_id, $id);
+                    $stmt->bind_param("sdssiiii", $name, $price, $description, $duration, $screen_id, $promotion_id, $language_id, $id);
                 }
 
                 $stmt->execute();
@@ -258,7 +259,7 @@ if ($method === 'GET') {
                 $stmt->close();
 
                 $incoming_date_ids = array_column($dates, 'id');
-                $new_dates = array_filter($dates, fn ($date) => !isset($date['id']));
+                $new_dates = array_filter($dates, fn ($date) => !isset($date['id']) || $date['id'] === '');
                 $existing_dates = array_filter($dates, fn ($date) => isset($date['id']));
                 $removed_date_ids = array_diff($existing_date_ids, $incoming_date_ids);
 
@@ -304,6 +305,7 @@ if ($method === 'GET') {
         $name = $_POST['name'];
         $price = $_POST['price'];
         $duration = $_POST['duration'];
+        $description = $_POST['description'];
         $screen_id = $_POST['screen_id'];
         $language_id = $_POST['language_id'];
         $promotion_id = isset($_POST['promotion_id']) ? $_POST['promotion_id'] : null;
@@ -319,15 +321,16 @@ if ($method === 'GET') {
         $conn->begin_transaction();
         try {
             if ($image !== null) {
-                $sql = "INSERT INTO movie (name, price, duration, image, screen_id, promotion_id, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                error_log("IMAGE FILE ========= " . $_FILES['image']['tmp_name']);
+                $sql = "INSERT INTO movie (name, price, description, duration, image, screen_id, promotion_id, language_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 $null = NULL;
-                $stmt->bind_param("sdsbiii", $name, $price, $duration, $null, $screen_id, $promotion_id, $language_id);
-                $stmt->send_long_data(3, $image);
+                $stmt->bind_param("sdssbiii", $name, $price, $description, $duration, $null, $screen_id, $promotion_id, $language_id);
+                $stmt->send_long_data(4, $image);
             } else {
-                $sql = "INSERT INTO movie (name, price, duration, screen_id, promotion_id, language_id) VALUES (?, ?, ?, ?, ?, ?)";
+                $sql = "INSERT INTO movie (name, price, description, duration, screen_id, promotion_id, language_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
-                $stmt->bind_param("sdsiii", $name, $price, $duration, $screen_id, $promotion_id, $language_id);
+                $stmt->bind_param("sdssiii", $name, $price, $description, $duration, $screen_id, $promotion_id, $language_id);
             }
 
             $stmt->execute();
@@ -596,39 +599,54 @@ if ($method === 'GET') {
         echo json_encode(['message' => 'Movie update failed', 'status' => 'error', 'data' => null]);
     }
 } elseif ($method === 'DELETE') {
+    error_log("RUNNING delete =======================>");
     if (isset($_GET['id'])) {
         // Delete movie and related records
         $id = intval($_GET['id']);
-
+        error_log("ID =======================>" . $id);
         $conn->begin_transaction();
         try {
             // Delete related records in movie_category, movie_actor, movie_language, movie_date, and movie_seating
-            $tables = ['movie_category', 'movie_actor', 'movie_language', 'movie_date', 'movie_seating', 'movie_parking'];
+            $tables = ['movie_category', 'movie_actor', 'movie_date', 'movie_seating', 'movie_parking'];
             foreach ($tables as $table) {
                 $sql = "DELETE FROM $table WHERE movie_id = ?";
                 $stmt = $conn->prepare($sql);
+                if (!$stmt) {
+                    throw new Exception("Prepare statement failed for table $table: " . $conn->error);
+                }
                 $stmt->bind_param("i", $id);
-                $stmt->execute();
+                if (!$stmt->execute()) {
+                    throw new Exception("Execute failed for table $table: " . $stmt->error);
+                }
                 $stmt->close();
+                error_log("Deleted from table $table =======================>");
             }
 
             // Delete movie record
             $sql = "DELETE FROM movie WHERE id = ?";
             $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                throw new Exception("Prepare statement failed for movie: " . $conn->error);
+            }
             $stmt->bind_param("i", $id);
-            $stmt->execute();
+            if (!$stmt->execute()) {
+                throw new Exception("Execute failed for movie: " . $stmt->error);
+            }
             $stmt->close();
+            error_log("Deleted movie =======================>");
 
             $conn->commit();
             echo json_encode(['message' => 'Movie deleted successfully', 'status' => 'success', 'data' => null]);
         } catch (Exception $e) {
             $conn->rollback();
-            echo json_encode(['message' => 'Movie deletion failed', 'status' => 'error', 'data' => null]);
+            error_log("Exception: " . $e->getMessage());
+            echo json_encode(['message' => 'Movie deletion failed', 'id' => $id, 'status' => 'error', 'data' => null, 'error' => $e->getMessage()]);
         }
     } else {
         echo json_encode(['message' => 'Movie ID not provided', 'status' => 'error', 'data' => null]);
     }
-} else {
+}
+ else {
     echo json_encode(['message' => 'Invalid request method', 'status' => 'error', 'data' => null]);
 }
 

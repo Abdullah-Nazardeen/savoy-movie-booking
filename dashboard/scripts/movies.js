@@ -8,8 +8,6 @@ let existingImage = null;
 let scheduleCount = 1;
 let selectedCategories = [];
 let selectedActors = [];
-// let existingActorIds = [];
-// let existingCategoryIds = [];
 
 const tableBody = document.getElementById("table-body");
 const searchInput = document.getElementById("search-input");
@@ -101,11 +99,11 @@ function displayMovies(movies) {
       movie.actors.length > 3 ? `<span class="badge">...</span>` : "";
 
     const dates = movie.dates
-      .slice(0, 3)
+      .slice(0, 2)
       .map((date) => `<span class="badge">${date.start_time}</span>`)
       .join("");
     const datesBadge =
-      movie.dates.length > 3 ? `<span class="badge">...</span>` : "";
+      movie.dates.length > 2 ? `<span class="badge">...</span>` : "";
 
     const row = document.createElement("tr");
     row.classList.add("table-row");
@@ -114,18 +112,18 @@ function displayMovies(movies) {
       <td>${movie.name}</td>
       <td>${movie.screen.name}</td>
       <td>${movie.price}</td>     
-      <td>${movie.promotion.discount}%</td>
+      <td>${movie?.promotion?.discount ?? "None"}${movie?.promotion?.discount ? "%" : ""}</td>
       <td>${dates}${datesBadge}</td>
       <td>
         <i class="bi bi-three-dots table-more-option-btn" data-id="${
           movie.id
         }" data-name="${movie.name}" data-price="${
       movie.price
-    }" data-duration="${movie.duration}" data-image="${
-      movie.image || ""
-    }" data-promotion="${movie.promotion_id}" data-language="${
-      movie.language_id
-    }" data-screen="${
+    }" data-description="${movie.description}" data-duration="${
+      movie.duration
+    }" data-image="${movie.image || ""}" data-promotion="${
+      movie?.promotion_id ?? ""
+    }" data-language="${movie.language_id}" data-screen="${
       movie.screen_id
     }" data-date="${dateIdArray}" data-time="${startTimeArray}" data-category="${categoryIds}" data-actor="${actorIds}" tabindex="0"></i>
       </td>
@@ -151,6 +149,7 @@ function openMoreOptions(event) {
   const id = event.target.dataset.id;
   const name = event.target.dataset.name;
   const price = event.target.dataset.price;
+  const description = event.target.dataset.description;
   const duration = event.target.dataset.duration;
   const promotion = event.target.dataset.promotion;
   const language = event.target.dataset.language;
@@ -170,7 +169,7 @@ function openMoreOptions(event) {
   const popoverContent = document.createElement("div");
   popoverContent.classList.add = "popover-body";
   popoverContent.innerHTML = `
-      <button class="dropdown-item edit-btn text-primary" data-id="${id}" data-name="${name}" data-price="${price}" data-duration="${duration}" data-image="${image}" data-promotion="${promotion}" data-language="${language}" data-screen="${screen}" data-date="${dateIds}" data-time="${startTimes}" data-category="${category}" data-actor="${actor}">Edit</button>
+      <button class="dropdown-item edit-btn text-primary" data-id="${id}" data-name="${name}" data-price="${price}" data-description="${description}" data-duration="${duration}" data-image="${image}" data-promotion="${promotion}" data-language="${language}" data-screen="${screen}" data-date="${dateIds}" data-time="${startTimes}" data-category="${category}" data-actor="${actor}">Edit</button>
       <button class="dropdown-item delete-btn text-destruction" data-id="${id}">Delete</button>
     `;
 
@@ -209,17 +208,19 @@ function openMoreOptions(event) {
   });
 }
 
-function openCreateModal() {
+function resetFields() {
+  selectedActors = [];
+  selectedCategories = [];
   document.getElementById("editModalLabel").innerText = "Create Movie";
   document.getElementById("movie-name").value = "";
   document.getElementById("movie-price").value = "";
+  document.getElementById("movie-description").value = "";
   document.getElementById("movie-duration").value = "";
   document.getElementById("movie-id").value = "";
   movieImageInput.value = "";
   imageField.classList.remove("d-none");
   imagePreview.classList.add("d-none");
   existingImage = null;
-
   // Reset the schedule container
   scheduleContainer.innerHTML = `
     <div class="row mb-3" id="schedule-row-1">
@@ -244,15 +245,21 @@ function openCreateModal() {
     </div>
   `;
   scheduleCount = 1;
+}
+
+function openCreateModal() {
+  resetFields();
   fetchDropdownData();
   const modal = new bootstrap.Modal(document.getElementById("editModal"));
   modal.show();
 }
 
 function openEditModal(event) {
+  resetFields();
   const id = event.target.dataset.id;
   const name = event.target.dataset.name;
   const price = event.target.dataset.price;
+  const description = event.target.dataset.description;
   const duration = event.target.dataset.duration;
   const image = event.target.dataset.image;
   const promotion = event.target.dataset.promotion;
@@ -264,9 +271,10 @@ function openEditModal(event) {
   const actor = event.target.dataset.actor;
   const dateArray = dateIds.split(",");
   const startTimesArray = startTimes.split(",");
-
-  selectedActors = [...actor]
-  selectedCategories = [...category]
+  console.log("ACTOR ====", actor);
+  console.log("CATEGORY ====", category);
+  selectedActors = [...actor.split(",")];
+  selectedCategories = [...category.split(",")];
 
   const existingDates = dateArray.flatMap((id, index) => {
     return { id: id, start_time: startTimesArray[index] };
@@ -305,6 +313,7 @@ function openEditModal(event) {
   document.getElementById("editModalLabel").innerText = "Edit Movie";
   document.getElementById("movie-name").value = name;
   document.getElementById("movie-price").value = price;
+  document.getElementById("movie-description").value = description;
   document.getElementById("movie-duration").value = duration;
   document.getElementById("movie-id").value = id;
   if (image) {
@@ -382,6 +391,7 @@ function addScheduleRow() {
 function saveMovie() {
   const name = document.getElementById("movie-name").value;
   const price = document.getElementById("movie-price").value;
+  const description = document.getElementById("movie-description").value;
   const duration = document.getElementById("movie-duration").value;
   const id = document.getElementById("movie-id").value;
   const language = document.getElementById("movie-language").value;
@@ -391,7 +401,6 @@ function saveMovie() {
   const schedules = [];
 
   for (let i = 1; i <= scheduleCount; i++) {
-    console.log("scheduleCount", scheduleCount)
     const date = document.getElementById(`schedule-date-${i}`).value;
     const timeRange = document.getElementById(`schedule-time-${i}`).value;
     const id = document.getElementById(`schedule-id-${i}`).value;
@@ -408,26 +417,20 @@ function saveMovie() {
       const endTimestamp = new Date(
         `${date} ${convertTime(endTime)}`
       ).toISOString();
-      schedules.push({ id: id, start_time: startTimestamp, end_time: endTimestamp });
+      schedules.push({
+        id: id,
+        start_time: startTimestamp,
+        end_time: endTimestamp,
+      });
     }
   }
-
-  console.log("name", name)
-  console.log("price", price)
-  console.log("duration", duration)
-  console.log("language", language)
-  console.log("screen", screen)
-  console.log("image", image)
-  console.log("existingImage", existingImage)
-  console.log("selectedCategories.length", selectedCategories.length)
-  console.log("selectedActors.length ", selectedActors.length )
-  console.log("schedules.length", schedules.length)
 
   if (
     name &&
     price &&
     duration &&
     language &&
+    description &&
     screen &&
     (image || existingImage) &&
     selectedCategories.length &&
@@ -437,6 +440,7 @@ function saveMovie() {
     const formData = new FormData();
     formData.append("name", name);
     formData.append("price", price);
+    formData.append("description", description);
     formData.append("duration", duration);
     formData.append("language_id", language);
     formData.append("screen_id", screen);
@@ -444,16 +448,13 @@ function saveMovie() {
     formData.append("category_ids", selectedCategories.join(","));
     formData.append("actor_ids", selectedActors.join(","));
     formData.append("dates", JSON.stringify(schedules));
-    console.log("SELECTED CATEGORIES", selectedCategories);
-    console.log("SELECTED ACTORS", selectedActors);
     if (image) {
       formData.append("image", image);
     }
     if (id) {
       formData.append("id", id);
     }
-    console.log("formData", formData);
-    const method = id ? "PUT" : "POST";
+    const method = "POST";
     const url = id
       ? `http://localhost/savoy-movie-booking/api/movie.php?id=${id}`
       : "http://localhost/savoy-movie-booking/api/movie.php";
@@ -476,7 +477,29 @@ function saveMovie() {
         setLoadingState(saveBtn, false, "Save");
       });
   } else {
-    showToast("All fields are required", "error");
+    if(!name) {
+      showToast("Name is required", "error");
+    } else if (!price) {
+      showToast("Price is required", "error");
+    } else if (!duration) {
+      showToast("Duration is required", "error");
+    } else if (!language) {
+      showToast("Language is required", "error");
+    } else if (!description) {
+      showToast("Description is required", "error");
+    } else if (!screen) {
+      showToast("Screen is required", "error");
+    } else if (!(image || existingImage)) {
+      showToast("Movie image is required", "error");
+    } else if (!selectedCategories.length) {
+      showToast("Category is required", "error");
+    } else if (!selectedActors.length) {
+      showToast("Actor is required", "error");
+    } else if (!schedules.length) {
+      showToast("Movie schedule is required", "error");
+    } else {
+      showToast("All fields is required", "error");
+    }
   }
 }
 
@@ -589,11 +612,17 @@ function fetchDropdownData(
     .then((data) => {
       const languageSelect = document.getElementById("movie-language");
       languageSelect.innerHTML = data.data
-        .map((language) => {
+        .map((language, index) => {
           const isSelected = language.id === languageId;
-          return `<option value="${language.id}" ${
-            isSelected ? "selected" : ""
-          }>${language.name}</option>`;
+          if (index === 0) {
+            return `<option value="" disabled selected>Select movie language</option><option value="${
+              language.id
+            }" ${isSelected ? "selected" : ""}>${language.name}</option>`;
+          } else {
+            return `<option value="${language.id}" ${
+              isSelected ? "selected" : ""
+            }>${language.name}</option>`;
+          }
         })
         .join("");
     });
@@ -603,11 +632,17 @@ function fetchDropdownData(
     .then((data) => {
       const promotionSelect = document.getElementById("movie-promotion");
       promotionSelect.innerHTML = data.data
-        .map((promotion) => {
+        .map((promotion, index) => {
           const isSelected = promotion.id === promotionId;
-          return `<option value="${promotion.id}" ${
-            isSelected ? "selected" : ""
-          }>${promotion.name}</option>`;
+          if(index === 0) {
+            return `<option value="" disabled selected>Select promotion</option><option value="">None</option><option value="${promotion.id}" ${
+              isSelected ? "selected" : ""
+            }>${promotion.name}</option>`;
+          } else {
+            return `<option value="${promotion.id}" ${
+              isSelected ? "selected" : ""
+            }>${promotion.name}</option>`;
+          }
         })
         .join("");
     });
@@ -617,11 +652,18 @@ function fetchDropdownData(
     .then((data) => {
       const screenSelect = document.getElementById("movie-screen");
       screenSelect.innerHTML = data.data
-        .map((screen) => {
+        .map((screen, index) => {
           const isSelected = screen.id === screenId;
-          return `<option value="${screen.id}" ${
-            isSelected ? "selected" : ""
-          }>${screen.name}</option>`;
+          if(index === 0) {
+            return `<option value="" disabled selected>Select screen</option><option value="${screen.id}" ${
+              isSelected ? "selected" : ""
+            }>${screen.name}</option>`;
+          } else {
+            return `<option value="${screen.id}" ${
+              isSelected ? "selected" : ""
+            }>${screen.name}</option>`;
+          }
+          
         })
         .join("");
     });
