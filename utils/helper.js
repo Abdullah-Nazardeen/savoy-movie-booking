@@ -36,3 +36,35 @@ export function showToast(message, type = "success") {
 
   toastBootstrap.show();
 }
+
+export function formatDate(dateString, options = { includeYear: false }) {
+  const months = [
+      "January", "February", "March", "April", "May", "June", 
+      "July", "August", "September", "October", "November", "December"
+  ];
+
+  const [year, month, day] = dateString.split('-');
+
+  // Remove leading zeros from day
+  const dayNumber = parseInt(day, 10);
+
+  // Get the appropriate suffix for the day
+  let daySuffix;
+  if (dayNumber % 10 === 1 && dayNumber !== 11) {
+      daySuffix = "st";
+  } else if (dayNumber % 10 === 2 && dayNumber !== 12) {
+      daySuffix = "nd";
+  } else if (dayNumber % 10 === 3 && dayNumber !== 13) {
+      daySuffix = "rd";
+  } else {
+      daySuffix = "th";
+  }
+
+  const formattedDate = `${dayNumber}${daySuffix} ${months[month - 1]}`;
+
+  if (options.includeYear) {
+      return `${formattedDate} ${year}`;
+  } else {
+      return formattedDate;
+  }
+}

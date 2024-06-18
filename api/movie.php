@@ -173,7 +173,7 @@ if ($method === 'GET') {
                     $sql = "UPDATE movie SET name = ?, price = ?, description = ?, duration = ?, image = ?, screen_id = ?, promotion_id = ?, language_id = ? WHERE id = ?";
                     $stmt = $conn->prepare($sql);
                     $null = NULL;
-                    $stmt->bind_param("sdssbsiiii", $name, $price, $description, $duration, $null, $screen_id, $promotion_id, $language_id, $id);
+                    $stmt->bind_param("sdssbsiii", $name, $price, $description, $duration, $null, $screen_id, $promotion_id, $language_id, $id);
                     $stmt->send_long_data(4, $image);
                 } else {
                     $sql = "UPDATE movie SET name = ?, price = ?, description = ?, duration = ?, screen_id = ?, promotion_id = ?, language_id = ? WHERE id = ?";

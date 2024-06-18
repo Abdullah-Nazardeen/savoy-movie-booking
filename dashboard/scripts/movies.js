@@ -78,6 +78,7 @@ function displayMovies(movies) {
     const actorIds = movie.actors.map((actor) => actor.id);
     const dateIdArray = movie.dates.map((date) => date.id);
     const startTimeArray = movie.dates.map((date) => date.start_time);
+    console.log("movie.description",movie.description)
     const avatar = movie.image
       ? `<img src="data:image/jpeg;base64,${movie.image}" class="avatar" alt="Avatar" />`
       : `<div class="avatar-placeholder">${movie.name
@@ -150,6 +151,7 @@ function openMoreOptions(event) {
   const name = event.target.dataset.name;
   const price = event.target.dataset.price;
   const description = event.target.dataset.description;
+  console.log("description", description)
   const duration = event.target.dataset.duration;
   const promotion = event.target.dataset.promotion;
   const language = event.target.dataset.language;

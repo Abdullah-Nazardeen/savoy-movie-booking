@@ -200,6 +200,7 @@ function handleImageChange() {
       previewImg.src = e.target.result;
       imageField.classList.add("d-none");
       imagePreview.classList.remove("d-none");
+      existingImage = true;
     };
     reader.readAsDataURL(file);
   }
@@ -221,7 +222,7 @@ function saveActor() {
   if (name) {
     const formData = new FormData();
     formData.append("name", name);
-    if(!existingImage) {
+    if(!existingImage || !image) {
       showToast("Image is required", "error");
       return
     }

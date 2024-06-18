@@ -1,0 +1,145 @@
+
+#main-content {
+    height: 90vh;
+    overflow-y: scroll;
+  }
+  
+  #main-content::-webkit-scrollbar {
+    background-color: #121212;
+    width: 12px;
+  }
+  
+  #main-content::-webkit-scrollbar-track {
+    background-color: #121212;
+  }
+  
+  #main-content::-webkit-scrollbar-thumb {
+    background-color: #5c3c7b;
+    border-radius: 16px;
+    border: 3px solid #121212;
+  }
+  
+  #main-content::-webkit-scrollbar-button {
+    display: none;
+  }
+  
+  #carouselExampleCaptions {
+    height: 90vh !important;
+  }
+  
+  .carousel-caption {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+  
+  .movie-by-date-container {
+    display: flex;
+    flex-direction: column;
+    margin: 2rem 0 2rem 0;
+    row-gap: 1rem;
+    width: 100%;
+    padding: 0 2% 0 2%;
+  }
+  
+  .movie-by-date-title-container {
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .movie-by-date-list {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    row-gap: 2rem;
+  }
+  
+  @media (max-width: 1200px) {
+    .movie-by-date-list {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .movie-by-date-list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+.date-title {
+    font-weight: 600 !important;
+}
+
+  .movie-card {
+    position: relative;
+    width: 220px;
+    width: 200px;
+  }
+  
+  .movie-card img {
+    height: 100%;
+    width: 100%;
+    display: block;
+  }
+  
+  .movie-card .movie-details {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content:space-between;
+    align-items: baseline;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    padding: 30px 10px 10px 10px;
+  }
+  
+  .movie-title {
+    display: flex;
+    width: 100%;
+    justify-content: baseline;
+    align-items: center;
+    font-size: large;
+  }
+  
+  .movie-card:hover .movie-details {
+    opacity: 1;
+  }
+  
+  .movie-card .movie-details p {
+    margin: 5px 0;
+  }
+  
+  .movie-text {
+    font-weight: bold;
+  }
+
+  .discount-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: red;
+    color: white;
+    padding: 2px 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+  }
+  
+  .discount-badge p{
+    margin: 0;
+  }
+
+  .movie-card:hover .discount-badge {
+    opacity: 0;
+  }
+
+#loading {
+    height: 70vh;
+}

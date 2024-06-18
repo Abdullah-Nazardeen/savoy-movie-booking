@@ -15,19 +15,19 @@
     display: flex;
     align-items: center;
     padding: 10px;
-    color: #4b0082;
+    color: #5c3c7b;
     text-decoration: none;
     padding-left: 1.5em;
   }
 
   .nav-link:hover {
     background-color: #F2F2FD;
-    color: #4b0082;
+    color: #5c3c7b;
   }
 
   .nav-link.selected {
     background-color: #e6e6fa;
-    color: #4b0082;
+    color: #5c3c7b;
   }
 
   .nav-link .bi {
@@ -40,12 +40,18 @@
     align-items: center;
     justify-content: center;
     padding: 1em 0 1em 0;
+    height: 20vh;
   }
 
   .logo {
-    width: 40%;
+    width: 80%;
+    color: #5c3c7b;
+    
   }
 
+  #brand-name {
+    font-weight: 600 !important;
+  }
   .logout {
     position: absolute;
     bottom: 10px;
@@ -53,7 +59,7 @@
   }
 
   .logout .nav-link {
-    color: #4b0082;
+    color: #5c3c7b;
   }
 
   .logout .nav-link:hover {
