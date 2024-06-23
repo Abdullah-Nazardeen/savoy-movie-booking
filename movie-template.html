@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Movie</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles/theme.css" />
+    <link rel="stylesheet" href="./styles/nav-bar.css" />
+    <link rel="stylesheet" href="./styles/footer.css" />
+    <link rel="stylesheet" href="./styles/multi-carasol.css" />
+    <link rel="stylesheet" href="./styles/movie.css" />
+  </head>
+
+  <body>
+    <div id="nav-container"></div>
+    <div id="main-content">
+      <div
+        id="loading"
+        class="d-flex justify-content-center align-items-center"
+      >
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+      <div class="movie-content">
+        <div class="movie-details">
+          <div class="movie-poster-container">
+            <img src="./images/asd.jpg" alt="" class="image-poster" />
+          </div>
+          <div class="movie-info">
+            <div class="title-container">
+              <h2>Fast & Furious 8</h2>
+              <p class="price-title">Rs 800.00</p>
+            </div>
+
+            <p>
+              Show Dates: <span class="badge">7th June</span
+              ><span class="badge">9th June</span
+              ><span class="badge">12th June</span>
+            </p>
+            <p>
+              Category: <span class="badge">Action</span
+              ><span class="badge">Adventure</span
+              ><span class="badge">Thriller</span
+              ><span class="badge">Comedy</span>
+            </p>
+            <p>Language: <span class="badge">English</span></p>
+            <p>Duration: <span>2h 30m</span></p>
+            <p>Description:</p>
+            <p>
+              Dominic Toretto and his team face their toughest challenge yet
+              when a mysterious woman seduces Dom into the world of crime,
+              forcing the team to unite and stop her sinister plans. With
+              thrilling car chases and an all-star cast, \"The Fate of the
+              Furious\" delivers adrenaline-pumping action.
+            </p>
+          </div>
+        </div>
+        <div class="actor-container">
+          <h4>Actors</h4>
+          <div
+            class="MultiCarousel"
+            data-items="1,3,5,6"
+            data-slide="1"
+            id="MultiCarousel"
+            data-interval="1000"
+          >
+            <div class="MultiCarousel-inner">
+              <div class="item">
+                <img src="./images/download.jpeg" alt="" class="actor-image" />
+                <p class="actor-name">Vin Disel</p>
+              </div>
+              <div class="item">
+                <img
+                  src="./images/download (2).jpeg"
+                  alt=""
+                  class="actor-image"
+                />
+                <p class="actor-name">Vin Disel</p>
+              </div>
+            </div>
+            <button class="btn btn-primary leftLst" title="left arrow">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="30"
+                height="30"
+                fill="currentColor"
+                class="bi bi-chevron-left"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"
+                />
+              </svg>
+            </button>
+            <button class="btn btn-primary rightLst" title="right arrow">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="30"
+                height="30"
+                fill="currentColor"
+                class="bi bi-chevron-right"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="date-container">
+          <p class="show-time-title">Show Times</p>
+          <div class="show-time-container">
+            <div class="show-time selected-time"><p>9th June 13:00</p></div>
+            <div class="show-time"><p>10th June 13:00</p></div>
+            <div class="show-time"><p>11th June 13:00</p></div>
+            <div class="show-time"><p>12th June 13:00</p></div>
+          </div>
+        </div>
+        <div class="seating-booking-container">
+          <div class="seating-info">
+            <p>Available Seats</p>
+            <div class="reserved-info-container">
+              <div class="text-color-container">
+                <p>Reserved</p>
+                <div class="reserved-box"></div>
+              </div>
+              <div class="text-color-container">
+                <p>Available</p>
+                <div class="available-box"></div>
+              </div>
+            </div>
+          </div>
+          <div class="seating-structure">
+            <div class="screen-container">
+              <p>Screen</p>
+              <div class="screen"></div>
+            </div>
+
+            <div class="ten-seat">
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat booked"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat booked"></div>
+              <div class="seat"></div>
+              <div class="seat booked"></div>
+            </div>
+            <div class="fourteen-seat">
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat booked"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat booked"></div>
+              <div class="seat booked"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat booked"></div>
+              <div class="seat"></div>
+              <div class="seat booked"></div>
+              <div class="seat"></div>
+            </div>
+            <div class="eighteen-seat">
+              <div class="seat"></div>
+              <div class="seat booked"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat booked"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat booked"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+              <div class="seat"></div>
+            </div>
+          </div>
+        </div>
+        <div class="booking-form-container">
+          <div class="booking-form">
+            <div class="payment-form-container">
+              <div class="parking-container">
+                <p>
+                  Parking
+                  <span class="parking-price">(Rs 400.00 per slot)</span>
+                </p>
+                <div class="parking-form">
+                  <div class="custom-checkbox">
+                    <span class="parking-tickets-text"
+                      >Add Parking Tickets
+                      <span class="parking-remaining">(10 remaining)</span
+                      >:</span
+                    >
+                    <div class="quantity-controls ml-3">
+                      <button type="button" class="btn btn-outline-secondary">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-dash"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8"
+                          />
+                        </svg>
+                      </button>
+                      <span class="mx-2">1</span>
+                      <button type="button" class="btn btn-outline-secondary">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="20"
+                          height="20"
+                          fill="currentColor"
+                          class="bi bi-plus"
+                          viewBox="0 0 16 16"
+                        >
+                          <path
+                            d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p class="booking-title">Payment Details</p>
+              <div class="card">
+                <img class="logo" src="./images/visa.png" />
+
+                <!-- Card Number -->
+                <label>Card Number</label>
+                <input
+                  class="card-number"
+                  placeholder="1234 1234 1234 1234"
+                  type="text"
+                  required
+                  maxlength="16"
+                />
+
+                <div class="container2">
+                  <!-- Card Holder -->
+                  <div class="name">
+                    <label>Card Holder</label>
+                    <input
+                      class="card-name"
+                      placeholder="BOB MARLEY"
+                      type="text"
+                      required
+                    />
+                  </div>
+
+                  <!-- Date -->
+                  <div class="expiration-date">
+                    <label>Exp. Date</label>
+                    <input
+                      class="card-name"
+                      placeholder="10/25"
+                      type="text"
+                      maxlength="5"
+                      required
+                    />
+                  </div>
+
+                  <!-- Cvv -->
+                  <div class="ccv">
+                    <label>CCV</label>
+                    <input
+                      class="card-name"
+                      placeholder="123"
+                      type="text"
+                      maxlength="3"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="display-container">
+              <p class="booking-title">Booking Details</p>
+              <div class="booking-info">
+                <div>
+                  <div class="key-value-pair">
+                    <p>Seat's Booked:</p>
+                    <p>
+                      <span class="badge">FX-01</span
+                      ><span class="badge">FX-02</span>
+                    </p>
+                  </div>
+                  <div class="key-value-pair">
+                    <p>Parking Slot:</p>
+                    <p>
+                      <span class="badge">px-01</span>
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <div class="key-value-pair">
+                    <p>Movie Ticket Price:</p>
+                    <p class="value">Rs 1600.00</p>
+                  </div>
+                  <div class="key-value-pair">
+                    <p>Parking Ticket Price:</p>
+                    <p class="value">Rs 400.00</p>
+                  </div>
+                  <div class="key-value-pair">
+                    <p>Total:</p>
+                    <p class="value">Rs 2000.00</p>
+                  </div>
+                  <div class="payment-btn-container">
+                    <button
+                      type="button"
+                      class="btn btn-primary payment-btn"
+                      id="add-schedule-btn"
+                    >
+                      Checkout
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="footer-container"></div>
+    </div>
+
+    <script type="module" src="./scripts/nav-bar.js"></script>
+    <script type="module" src="./scripts/footer.js"></script>
+    <script type="module" src="./scripts/multi-carasol.js"></script>
+    <script type="module" src="./scripts/movie.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+      integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"
+      integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

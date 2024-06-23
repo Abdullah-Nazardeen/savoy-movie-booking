@@ -148,24 +148,73 @@ if ($method === 'POST') {
     }
 } elseif ($method === 'GET') {
     if (isset($_GET['id'])) {
-        // Get ticket by ID
-        $id = intval($_GET['id']);
-        $sql = "SELECT * FROM ticket WHERE id = ?";
+        // Get tickets by user ID
+        $user_id = intval($_GET['id']);
+        $sql = "
+        SELECT 
+            ticket.id, 
+            ticket.status, 
+            ticket.final_price, 
+            ticket.date, 
+            movie.name AS movie_name, 
+            user.email AS user_email,
+            GROUP_CONCAT(DISTINCT movie_parking.parking_code) AS parking_codes,
+            GROUP_CONCAT(DISTINCT movie_seating.seat_code) AS seat_codes
+        FROM 
+            ticket
+        JOIN 
+            movie ON ticket.movie_id = movie.id
+        JOIN 
+            user ON ticket.user_id = user.id
+        LEFT JOIN 
+            movie_parking ON ticket.id = movie_parking.ticket_id
+        LEFT JOIN 
+            movie_seating ON ticket.id = movie_seating.ticket_id
+        WHERE 
+            ticket.user_id = ?
+        GROUP BY 
+            ticket.id, ticket.status, ticket.final_price, ticket.date, movie.name, user.email
+        ";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $id);
+        $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
-        $ticket = $result->fetch_assoc();
 
-        if ($ticket) {
-            echo json_encode(['message' => 'Ticket retrieved successfully', 'status' => 'success', 'data' => $ticket]);
+        if ($result->num_rows > 0) {
+            $tickets = [];
+            while ($row = $result->fetch_assoc()) {
+                $tickets[] = $row;
+            }
+            echo json_encode(['message' => 'Tickets retrieved successfully', 'status' => 'success', 'data' => $tickets]);
         } else {
-            echo json_encode(['message' => 'Ticket not found', 'status' => 'error', 'data' => null]);
+            echo json_encode(['message' => 'No tickets found for the user', 'status' => 'error', 'data' => null]);
         }
         $stmt->close();
     } else {
         // Get all tickets
-        $sql = "SELECT * FROM ticket";
+        $sql = "
+        SELECT 
+            ticket.id, 
+            ticket.status, 
+            ticket.final_price, 
+            ticket.date, 
+            movie.name AS movie_name, 
+            user.email AS user_email,
+            GROUP_CONCAT(DISTINCT movie_parking.parking_code) AS parking_codes,
+            GROUP_CONCAT(DISTINCT movie_seating.seat_code) AS seat_codes
+        FROM 
+            ticket
+        JOIN 
+            movie ON ticket.movie_id = movie.id
+        JOIN 
+            user ON ticket.user_id = user.id
+        LEFT JOIN 
+            movie_parking ON ticket.id = movie_parking.ticket_id
+        LEFT JOIN 
+            movie_seating ON ticket.id = movie_seating.ticket_id
+        GROUP BY 
+            ticket.id, ticket.status, ticket.final_price, ticket.date, movie.name, user.email
+    ";
         $result = $conn->query($sql);
 
         if ($result->num_rows > 0) {
@@ -243,4 +292,3 @@ if ($method === 'POST') {
 }
 
 $conn->close();
-?>

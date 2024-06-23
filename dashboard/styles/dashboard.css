@@ -1,5 +1,6 @@
 body {
   display: flex;
+  overflow-y: hidden;
 }
 
 .main-content {
@@ -205,3 +206,26 @@ body {
   margin-right: 0.2rem;
 }
 
+.badge.accept-badge {
+  background-color: green;
+}
+
+.badge.reject-badge {
+  background-color: red;
+}
+
+.reject-booking {
+  color: red;
+  cursor: pointer;
+}
+
+.accept-booking {
+  color: green;
+  cursor: pointer;
+}
+
+.status-icons-container {
+  display: flex;
+  column-gap: 0.8rem;
+  align-items: center;
+}

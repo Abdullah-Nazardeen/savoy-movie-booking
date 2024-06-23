@@ -1,3 +1,7 @@
+body {
+  overflow: hidden;
+}
+
 #main-content {
   height: 90vh;
   overflow-y: scroll;
@@ -149,12 +153,28 @@
   padding: 0% 0%;
 }
 
+.movie-info {
+  flex: 1;
+}
+
+.title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.price-title {
+  font-size: larger;
+  margin: 0;
+}
+
 .movie-details {
   display: flex;
   column-gap: 6rem;
   color: #e6e6fa;
   background-color: rgba(31, 27, 36, 0.3);
-  padding: 4% 10%;
+  padding: 4% 8%;
   font-size: large;
 }
 
@@ -168,8 +188,17 @@
   margin-right: 0.5rem;
 }
 
+.badge.price {
+  background-color: #5c3c7b;
+  font-size: medium;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .actor-container {
-  padding: 2% 10%;
+  padding: 2% 8%;
   color: #e6e6fa;
 }
 
@@ -198,7 +227,7 @@
 }
 
 .date-container {
-  padding: 4% 10% 0 10%;
+  padding: 4% 8% 0 8%;
   color: #e6e6fa;
   display: flex;
   flex-direction: column;
@@ -214,7 +243,7 @@
 }
 
 .show-time-title {
-  font-size: 1.2rem;
+  font-size: x-large;
 }
 
 .show-time {
@@ -246,7 +275,7 @@
 .seating-booking-container {
   color: #e6e6fa;
   background-color: rgba(31, 27, 36, 0.3);
-  padding: 4% 10%;
+  padding: 4% 8%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -257,7 +286,7 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  font-size: 1.2rem;
+  font-size: x-large;
 }
 
 .seating-info p {
@@ -304,13 +333,13 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 4rem 0 6rem 0;
+  margin: 4rem 0 9rem 0;
   font-size: 1.3rem;
 }
 
 .screen {
   height: 5px;
-  width: 600px;
+  width: 650px;
   background-color: white;
 }
 
@@ -330,8 +359,8 @@
 }
 
 .seat {
-  height: 60px;
-  width: 40px;
+  height: 50px;
+  width: 35px;
   background-color: #e6e6fa;
   margin: 1rem;
   cursor: pointer;
@@ -346,6 +375,261 @@
   cursor: default;
 }
 
+.seat.selected {
+  background-color: rgba(203, 174, 231, 0.1);
+}
+
 .seat.booked:hover {
   background-color: rgba(203, 174, 231, 0.5);
+}
+
+.booking-form-container {
+  padding: 4% 8%;
+}
+
+.booking-form {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  border-radius: 1rem;
+  color: #5c3c7b;
+  font-size: large;
+}
+
+.input-container {
+  width: 80%;
+}
+
+.payment-form-container {
+  background-color: white;
+  padding: 4%;
+  border-bottom-left-radius: 1rem;
+  border-top-left-radius: 1rem;
+  height: 80vh;
+  width: 65%;
+  border-right: 2px;
+  border-style: solid;
+  border-color: #e6e6fa;
+}
+
+.payment-btn-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+.payment-btn {
+  width: 100%;
+}
+
+.display-container {
+  background-color: white;
+  padding: 4%;
+  border-bottom-right-radius: 1rem;
+  border-top-right-radius: 1rem;
+  height: 80vh;
+  width: 35%;
+}
+
+.booking-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 86%;
+}
+
+.booking-title {
+  font-size: x-large;
+  font-weight: 600;
+}
+
+.key-value-pair {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.value {
+  font-weight: 600;
+}
+
+.form-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.parking-container {
+  /* background-color: rgba(31, 27, 36, 0.3); */
+  color: #5c3c7b;
+  font-size: large;
+  margin-bottom: 1rem;
+}
+
+.parking-container p {
+  font-size: x-large;
+  margin: 0;
+  font-weight: 600;
+}
+
+.parking-price {
+  font-size: large;
+}
+
+.parking-remaining {
+  font-size: medium;
+}
+
+.parking-form {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.custom-checkbox {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 2rem;
+}
+
+.parking-tickets-text {
+  font-size: large;
+}
+
+.quantity-controls {
+  display: inline-flex;
+  align-items: center;
+}
+.quantity-controls .btn {
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  height: 280px;
+  width: 420px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(35px);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 80px rgba(0, 0, 0, 0.25);
+  padding: 20px 30px 30px 30px;
+  overflow: hidden;
+  background-color: #1f1b24;
+}
+
+.logo {
+  height: 60px;
+  width: 80px;
+  margin-bottom: 20px;
+}
+
+.card-number {
+  font-size: 30px;
+  font-family: "Space Mono", monospace;
+  width: 100%;
+  height: 50px;
+  margin-bottom: 40px;
+}
+
+.card-number::placeholder {
+  color: #b5b5b5;
+  font-size: 30px;
+  font-family: "Space Mono", monospace;
+}
+
+input::placeholder {
+  color: #b5b5b5;
+  font-family: "Space Mono", monospace;
+}
+
+.name {
+  font-family: "Space Mono", monospace;
+  /* padding: 0px 80px 0px 0px; */
+  margin-right: 40px;
+  width: 100px;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.expiration-date {
+  font-family: "Space Mono", monospace;
+  padding: 0px 0px 0px 0px;
+  margin-right: 60px;
+  width: 80px;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.ccv {
+  font-family: "Space Mono", monospace;
+  padding: 0px 0px 0px 0px;
+  margin-right: 0px;
+  width: 60px;
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+input {
+  font-family: "Space Mono", monospace;
+  border: none;
+  font-size: 16px;
+  height: 26px;
+  color: #ffffff;
+  background: 0;
+  padding: 0;
+  width: 0;
+  border-bottom: 1px solid white;
+  color: white;
+}
+
+label {
+  color: white;
+  font-size: 12px;
+  font-weight: normal;
+  font-family: "Space Mono", monospace;
+  pointer-events: none;
+  display: block;
+  padding-bottom: 2px;
+}
+
+.card-name {
+  color: white;
+  font-size: 16px;
+  height: 26px;
+  width: 160px;
+  border-bottom: 1px solid white;
+  color: white;
+}
+
+.container2 {
+  display: flex;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.btn-outline-secondary {
+  border-width: 2px;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #5c3c7b;
 }

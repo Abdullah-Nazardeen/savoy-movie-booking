@@ -1,23 +1,62 @@
+body {
+  background-color: #2b2b2b;
+  color: #e6e6fa;
+}
+
 .rounded {
-    border-radius: 1rem !important;
-  }
-  
-  .shadow {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
-  }
-  
-  .main-container {
-    padding: 2rem 0.5rem 3rem 0.5rem !important;
-    height: 90vh !important;
-  }
+  border-radius: 1rem !important;
+}
 
-  .logo {
-    height: 30vh !important;
-  }
+.shadow {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+}
 
-  #loginForm {
-    height: 50vh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-  }
+.main-container {
+  padding: 2rem 0.5rem 3rem 0.5rem !important;
+  height: 90vh !important;
+  background-color: #121212 !important;
+}
+
+.logo {
+  height: 25vh !important;
+}
+
+#loginForm {
+  height: 50vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+}
+
+.login-btn {
+  width: 100%;
+}
+
+.register-text {
+  font-weight: 700;
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+}
+
+.have-account-text {
+  margin: 6px 0 10px 0;
+  font-size: 0.8rem;
+}
+
+.form-control.no-glow {
+  background-color: #333;
+  color: #e6e6fa;
+  border: 1px solid #555;
+}
+
+.form-control.no-glow:focus {
+  box-shadow: none;
+  border-color: #666;
+}
+
+.toast-body {
+  color: #5c3c7b !important;
+}

@@ -10,11 +10,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const navLinks = document.querySelectorAll(".nav-link");
     navLinks.forEach((link) => {
       const linkPath = link.getAttribute("href").split("/").pop();
-      console.log("linkPath: " + linkPath)
-      console.log("currentPath: " + currentPath)
+      console.log("linkPath: " + linkPath);
+      console.log("currentPath: " + currentPath);
       if (linkPath === currentPath) {
         link.classList.add("selected");
       }
+    });
+
+    const logoutBtn = document.getElementById("logout-btn");
+
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("savoy-auth");
+      window.location.href("http://localhost/savoy-movie-booking/home.html");
     });
   }, 300);
 });

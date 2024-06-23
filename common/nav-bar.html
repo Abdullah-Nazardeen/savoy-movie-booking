@@ -1,5 +1,5 @@
 <nav class="navbar">
-  <a href="#" class="navbar-brand">
+  <a href="/savoy-movie-booking/home.html" class="navbar-brand">
     <h3 id="brand-name">SAVOY</h3>
   </a>
   <div class="nav-middle">
@@ -15,35 +15,110 @@
         class="form-control no-glow"
         placeholder="Search..."
       />
-      <!-- <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter-square-fill" viewBox="0 0 16 16">
-          <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm.5 5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1 0-1M4 8.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m2 3a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5"/>
-        </svg> -->
     </form>
     <div class="nav-links">
-      <a href="#" class="nav-link">About</a>
+      <a href="/savoy-movie-booking/about.html" class="nav-link">About</a>
       <a href="#" class="nav-link">Feedback</a>
     </div>
   </div>
-  <div class="nav-btn-container">
-    <a
-      href="http://localhost/savoy-movie-booking/dashboard/tickets.html"
-      class="nav-icon"
-      id="nav-tickets"
-      title="Tickets"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="30"
-        height="30"
-        fill="currentColor"
-        class="bi bi-ticket-perforated-fill"
-        viewBox="0 0 16 16"
-      >
-        <path
-          d="M0 4.5A1.5 1.5 0 0 1 1.5 3h13A1.5 1.5 0 0 1 16 4.5V6a.5.5 0 0 1-.5.5 1.5 1.5 0 0 0 0 3 .5.5 0 0 1 .5.5v1.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5V10a.5.5 0 0 1 .5-.5 1.5 1.5 0 1 0 0-3A.5.5 0 0 1 0 6zm4-1v1h1v-1zm1 3v-1H4v1zm7 0v-1h-1v1zm-1-2h1v-1h-1zm-6 3H4v1h1zm7 1v-1h-1v1zm-7 1H4v1h1zm7 1v-1h-1v1zm-8 1v1h1v-1zm7 1h1v-1h-1z"
-        />
-      </svg>
-    </a>
-    <button class="login-btn">Login</button>
+  <div class="nav-btn-container" id="login-nav-container">
+    <!-- Login button or user profile button will be dynamically inserted here -->
   </div>
 </nav>
+
+<div
+  class="modal fade"
+  id="editModal"
+  tabindex="-1"
+  aria-labelledby="editModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content user-modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-primary" id="editModalLabel">Edit Staff</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="edit-form">
+          <div class="mb-3">
+            <label for="user-email" class="form-label text-primary"
+              >E-mail</label
+            >
+            <input
+              type="text"
+              class="form-control no-glow"
+              id="user-email"
+              disabled
+            />
+          </div>
+          <div class="mb-3">
+            <label for="user-username" class="form-label text-primary"
+              >Username</label
+            >
+            <input
+              type="text"
+              class="form-control no-glow"
+              id="user-username"
+              disabled
+            />
+          </div>
+          <div class="mb-3">
+            <label for="user-first-name" class="form-label text-primary"
+              >First Name</label
+            >
+            <input
+              type="text"
+              class="form-control no-glow"
+              id="user-first-name"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="user-last-name" class="form-label text-primary"
+              >Last Name</label
+            >
+            <input
+              type="text"
+              class="form-control no-glow"
+              id="user-last-name"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="user-phone" class="form-label text-primary"
+              >Phone No</label
+            >
+            <input type="number" class="form-control no-glow" id="user-phone" />
+          </div>
+          <input type="hidden" id="user-id" />
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="save-btn" class="btn btn-primary">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="offcanvas offcanvas-end text-bg-dark"
+  tabindex="-1"
+  id="offcanvasDark"
+  aria-labelledby="offcanvasDarkLabel"
+>
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasDarkLabel">Ticket's</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <p>Place offcanvas content here.</p>
+  </div>
+</div>
+
+<div id="toast-placeholder" class="position-fixed top-0 start-50 translate-middle-x p-3"></div>

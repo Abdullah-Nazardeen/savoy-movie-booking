@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email, username, password, user_level: "admin" })
+            body: JSON.stringify({ email, username, password })
           });
           const data = await response.json();
           if(data.status === "success") {

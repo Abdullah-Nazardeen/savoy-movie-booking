@@ -30,9 +30,11 @@ document.addEventListener("DOMContentLoaded", function () {
           if (data.status === "success") {
             setLoadingState(submitButton, false, submitButtonText);
             showToast("Logged In");
+            console.log("USER DATA", data)
+            localStorage.setItem("savoy-auth", JSON.stringify(data.data))
             setTimeout(() => {
               window.location.href =
-                "http://localhost/savoy-movie-booking/dashboard/tickets.html";
+                "http://localhost/savoy-movie-booking/home.html";
             }, 1000);
           } else {
             showToast(data.message, "error");

@@ -64,12 +64,9 @@ function displayCustomers(customers) {
       <td>${avatar}</td>
       <td>${customer.email}</td>
       <td>${customer.username}</td>
-      <td>${customer.first_name ?? "-----"}</td>
-      <td>${customer.last_name ?? "-----"}</td>
-      <td>${customer.phone ?? "-----"}</td>
-      <td>
-        <i class="bi bi-three-dots table-more-option-btn" data-id="${customer.id}" data-email="${customer.email}" data-username="${customer.username}" data-firstName="${customer.first_name || ''}" data-lastName="${customer.last_name || ''}" data-phone="${customer.phone || ''}" tabindex="0"></i>
-      </td>
+      <td>${customer.first_name ? customer.first_name : "- - - - -"}</td>
+      <td>${customer.last_name ? customer.last_name : "- - - - -"}</td>
+      <td>${customer.phone ? customer.phone : "- - - - -"}</td>
     `;
     tableBody.appendChild(row);
   });

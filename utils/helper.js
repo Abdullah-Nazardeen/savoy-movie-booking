@@ -37,7 +37,7 @@ export function showToast(message, type = "success") {
   toastBootstrap.show();
 }
 
-export function formatDate(dateString, options = { includeYear: false }) {
+export function formatDate(dateString, timeString = "", options = { includeYear: false, includeTime: false }) {
   const months = [
       "January", "February", "March", "April", "May", "June", 
       "July", "August", "September", "October", "November", "December"
@@ -64,7 +64,18 @@ export function formatDate(dateString, options = { includeYear: false }) {
 
   if (options.includeYear) {
       return `${formattedDate} ${year}`;
+  } else if (options.includeTime) {
+    return `${formattedDate} ${timeString}`;
+  } else if (options.includeTime && options.includeYear) {
+    return `${formattedDate} ${year} ${timeString}`;
   } else {
       return formattedDate;
   }
+}
+
+export function capitalizeFirstLetter(str) {
+  if (str.length === 0) {
+      return str;
+  }
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }

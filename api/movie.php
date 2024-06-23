@@ -28,11 +28,10 @@ function get_movie_details($conn, $id, $date_id = null)
 
     if ($movie) {
         // Get screen details
-        
         if ($movie['image']) {
             $movie['image'] = base64_encode($movie['image']);
         }
-        
+
         $sql = "SELECT id, name, seating_capacity, seating_code FROM screen WHERE id = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $movie['screen_id']);
@@ -40,6 +39,14 @@ function get_movie_details($conn, $id, $date_id = null)
         $result = $stmt->get_result();
         $movie['screen'] = $result->fetch_assoc();
         $stmt->close();
+
+        $sql = "SELECT id, name, price, parking_capacity, code FROM parking ORDER BY id LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $movie['parking'] = $result->fetch_assoc();
+        $stmt->close();
+
 
         // Get promotion details if exists
         if ($movie['promotion_id']) {
@@ -93,32 +100,37 @@ function get_movie_details($conn, $id, $date_id = null)
         $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
-        $movie['dates'] = $result->fetch_all(MYSQLI_ASSOC);
+        $dates = $result->fetch_all(MYSQLI_ASSOC);
         $stmt->close();
 
-        // Get seating if date_id is provided
-        if ($date_id) {
-            $sql = "SELECT seat_code, status, ticket_id FROM movie_seating WHERE movie_id = ? AND date_id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ii", $id, $date_id);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $movie['seating'] = $result->fetch_all(MYSQLI_ASSOC);
-            $stmt->close();
+        $movie['dates'] = $dates;
 
-            // Get parking if date_id is provided
-            $sql = "SELECT parking_code, status, ticket_id FROM movie_parking WHERE movie_id = ? AND date_id = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ii", $id, $date_id);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $movie['parking'] = $result->fetch_all(MYSQLI_ASSOC);
-            $stmt->close();
-        }
+        // Use first date if date_id is not provided
+
+
+        // Get seating if date_id is provided
+
+        $sql = "SELECT seat_code, status, ticket_id, date_id FROM movie_seating WHERE movie_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $movie['seating'] = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
+
+        // Get parking if date_id is provided
+        $sql = "SELECT parking_code, status, ticket_id, date_id FROM movie_parking WHERE movie_id = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $movie['parking-slots'] = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt->close();
     }
     error_log("MOVIE ID: " . $id . " MOVIE DATA: " . print_r($movie, true));
     return $movie;
 }
+
 
 if ($method === 'GET') {
     if (isset($_GET['id'])) {
@@ -645,8 +657,7 @@ if ($method === 'GET') {
     } else {
         echo json_encode(['message' => 'Movie ID not provided', 'status' => 'error', 'data' => null]);
     }
-}
- else {
+} else {
     echo json_encode(['message' => 'Invalid request method', 'status' => 'error', 'data' => null]);
 }
 

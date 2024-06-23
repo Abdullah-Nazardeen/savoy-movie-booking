@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $data['password'];
 
     // Check if email exists
-    $sql = "SELECT id, username, email, password, user_level FROM user WHERE email = ?";
+    $sql = "SELECT id, username, email, password, user_level, first_name, last_name, phone FROM user WHERE email = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("s", $email);
     $stmt->execute();

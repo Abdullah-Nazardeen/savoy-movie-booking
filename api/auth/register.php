@@ -21,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $data['email'];
     $username = $data['username'];
     $password = $data['password'];
-    $user_level = $data['user_level'];
 
     // Check if email already exists
     $sql = "SELECT id FROM user WHERE email = ?";
@@ -36,6 +35,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
     $stmt->close();
+
+    // Check if there are any existing users
+    $sql = "SELECT COUNT(*) as count FROM user";
+    $result = $conn->query($sql);
+    $row = $result->fetch_assoc();
+    $user_count = $row['count'];
+    $user_level = ($user_count == 0) ? 'admin' : 'customer';
 
     // Hash the password
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
