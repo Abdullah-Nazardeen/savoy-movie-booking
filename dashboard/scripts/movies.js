@@ -471,6 +471,7 @@ function saveMovie() {
         const modal = bootstrap.Modal.getInstance(
           document.getElementById("editModal")
         );
+        showToast("Movie has been added successfully");
         modal.hide();
         fetchMovies();
       })
@@ -617,7 +618,7 @@ function fetchDropdownData(
         .map((language, index) => {
           const isSelected = language.id === languageId;
           if (index === 0) {
-            return `<option value="" disabled selected>Select movie language</option><option value="${
+            return `<option value="" selected>Select movie language</option><option value="${
               language.id
             }" ${isSelected ? "selected" : ""}>${language.name}</option>`;
           } else {
@@ -637,7 +638,7 @@ function fetchDropdownData(
         .map((promotion, index) => {
           const isSelected = promotion.id === promotionId;
           if(index === 0) {
-            return `<option value="" disabled selected>Select promotion</option><option value="">None</option><option value="${promotion.id}" ${
+            return `<option value="" selected>Select promotion</option><option value="">None</option><option value="${promotion.id}" ${
               isSelected ? "selected" : ""
             }>${promotion.name}</option>`;
           } else {
@@ -657,7 +658,7 @@ function fetchDropdownData(
         .map((screen, index) => {
           const isSelected = screen.id === screenId;
           if(index === 0) {
-            return `<option value="" disabled selected>Select screen</option><option value="${screen.id}" ${
+            return `<option value="" selected>Select screen</option><option value="${screen.id}" ${
               isSelected ? "selected" : ""
             }>${screen.name}</option>`;
           } else {

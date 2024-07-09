@@ -15,6 +15,10 @@ document.addEventListener("DOMContentLoaded", function () {
       setLoadingState(submitButton, true, "Loading...");
       console.log("validateEmail(email)", validateEmail(email));
       if (validateEmail(email)) {
+        if(!password) {
+          showToast("Password is required", "error");
+          return;
+        }
         try {
           const response = await fetch(
             "http://localhost/savoy-movie-booking/api/auth/login.php",
@@ -46,7 +50,6 @@ document.addEventListener("DOMContentLoaded", function () {
           console.error("Error:", error);
         }
       } else {
-        console.log("RUNNINGGGGGGGGGG", validateEmail(email));
         setLoadingState(submitButton, false, submitButtonText);
         showToast("Please enter a valid email address.", "error");
       }

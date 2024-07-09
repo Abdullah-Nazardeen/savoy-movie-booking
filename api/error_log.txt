@@ -1,1 +1,0 @@
-Column 'image' cannot be nullDuplicate entry '1-1' for key 'movie_category.PRIMARY'Duplicate entry '2-1' for key 'movie_category.PRIMARY'

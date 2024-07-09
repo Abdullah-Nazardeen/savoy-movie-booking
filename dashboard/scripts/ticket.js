@@ -116,6 +116,6 @@ function saveTicket(type, btn) {
         setLoadingState(saveBtn, false, "Save");
       });
   } else {
-    showToast("Name is required", "error");
+    console.log("ID is missing")
   }
 }

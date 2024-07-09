@@ -547,7 +547,7 @@ function handleCheckout(moviePrice, parkingPrice) {
       parkingTicketPrice: selectedParkingCount * parkingPrice,
       totalPrice:
         selectedSeats.length * moviePrice + selectedParkingCount * parkingPrice,
-      selectedDateId: selectedDateId, // Adding the selected date ID to the booking details
+      selectedDateId: selectedDateId, 
     };
 
     console.log("Booking Details:", bookingDetails);
@@ -560,12 +560,6 @@ function handleCheckout(moviePrice, parkingPrice) {
       expire_date: document.querySelector(".ex-date").value,
       user_id: authData.id,
     };
-
-    console.log("paymentDetails.name", paymentDetails.name);
-    console.log("paymentDetails.cvv", paymentDetails.cvv);
-    console.log("paymentDetails.bank_no", paymentDetails.bank_no);
-    console.log("paymentDetails.expire_date", paymentDetails.expire_date);
-    console.log("paymentDetails.cvv", paymentDetails.cvv);
 
     if (!paymentDetails.name) {
       showToast("Account name is required", "error");

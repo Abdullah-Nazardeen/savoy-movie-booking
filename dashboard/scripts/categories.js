@@ -186,6 +186,7 @@ function saveCategory() {
         const modal = bootstrap.Modal.getInstance(
           document.getElementById("editModal")
         );
+        showToast("Category has been updated successfully");
         modal.hide();
         fetchCategories();
       })

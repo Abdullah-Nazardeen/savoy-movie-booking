@@ -57,6 +57,12 @@ document.addEventListener("DOMContentLoaded", function () {
       `;
 
       const userBtn = document.getElementById("user-btn");
+      const feedbackLink = document.getElementById("feedback-nav");
+
+      feedbackLink.addEventListener("click", (e) => {
+        e.preventDefault();
+        openFeedbackModal();
+      });
 
       const popoverContent = document.createElement("div");
       popoverContent.classList.add = "popover-body";
@@ -115,10 +121,73 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Fetch and display tickets when the ticket icon is clicked
       const ticketIcon = document.getElementById("nav-tickets");
-      ticketIcon.addEventListener("click", (e) => {
-        e.preventDefault();
-        fetchTickets(authData.id);
-      });
+      if (ticketIcon) {
+        ticketIcon.addEventListener("click", (e) => {
+          e.preventDefault();
+          fetchTickets(authData.id);
+        });
+      }
+
+      function openFeedbackModal() {
+        const modal = new bootstrap.Modal(
+          document.getElementById("feedbackModal")
+        );
+        modal.show();
+      }
+
+      setTimeout(() => {
+        const sendBtn = document.getElementById("send-btn");
+        sendBtn.addEventListener("click", () => {
+          sendFeedback();
+        });
+      }, 300);
+
+      function sendFeedback() {
+        const comment = document.getElementById("comment").value;
+        const authData = JSON.parse(localStorage.getItem("savoy-auth"));
+
+        if (!comment) {
+          showToast("Comment is required", "error");
+          return;
+        }
+
+        const payload = JSON.stringify({
+          comment: comment,
+          email: authData.email,
+          user_id: authData.id,
+        });
+
+        const url = "http://localhost/savoy-movie-booking/api/feedback.php";
+
+        const sendBtn = document.getElementById("send-btn");
+        setLoadingState(sendBtn, true, "Sending...");
+        fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: payload,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            const modal = bootstrap.Modal.getInstance(
+              document.getElementById("feedbackModal")
+            );
+            modal.hide();
+            if (data.status === "success") {
+              showToast("Thank you for your feedback", "success");
+            } else {
+              showToast(data.message, "error");
+            }
+          })
+          .catch((error) => {
+            console.error("Error sending feedback:", error);
+            showToast("Error sending feedback", "error");
+          })
+          .finally(() => {
+            setLoadingState(sendBtn, false, "Send");
+          });
+      }
     } else {
       loginNavContainer.innerHTML = `<a id="login-nav-link" href="/savoy-movie-booking/sign-in.html"><button id="login-btn">Login</button></a>`;
     }
@@ -135,11 +204,14 @@ function openEditProfileModal(user) {
   document.getElementById("user-id").value = user.id;
   modal.show();
 }
+
 setTimeout(() => {
   const saveBtn = document.getElementById("save-btn");
-  saveBtn.addEventListener("click", () => {
-    saveUserProfile();
-  });
+  if (saveBtn) {
+    saveBtn.addEventListener("click", () => {
+      saveUserProfile();
+    });
+  }
 }, 300);
 
 function saveUserProfile() {
@@ -263,9 +335,13 @@ function displayTickets(tickets) {
       </div>
       <div class="d-flex justify-content-between ticket-card-row">
         <p><strong>Price:</strong> <span>Rs ${ticket.final_price}</span></p>
-        <span class="badge bg-info ${ticket.status == "rejected" ? "reject-badge" : ticket.status == "pending" ? "pending-badge" : "accept-badge"}">${capitalizeFirstLetter(
-          ticket.status
-        )}</span>
+        <span class="badge bg-info ${
+          ticket.status == "rejected"
+            ? "reject-badge"
+            : ticket.status == "pending"
+            ? "pending-badge"
+            : "accept-badge"
+        }">${capitalizeFirstLetter(ticket.status)}</span>
       </div>
     `;
     offcanvasBody.appendChild(ticketCard);

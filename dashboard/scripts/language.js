@@ -209,6 +209,7 @@ function deleteLanguage() {
       const modal = bootstrap.Modal.getInstance(
         document.getElementById("deleteModal")
       );
+      showToast("Language has been deleted");
       modal.hide();
       fetchLanguage();
     })

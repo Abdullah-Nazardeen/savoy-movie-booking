@@ -18,7 +18,7 @@
     </form>
     <div class="nav-links">
       <a href="/savoy-movie-booking/about.html" class="nav-link">About</a>
-      <a href="#" class="nav-link">Feedback</a>
+      <p id="feedback-nav">Feedback</p>
     </div>
   </div>
   <div class="nav-btn-container" id="login-nav-container">
@@ -36,7 +36,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content user-modal-content">
       <div class="modal-header">
-        <h5 class="modal-title text-primary" id="editModalLabel">Edit Staff</h5>
+        <h5 class="modal-title text-primary" id="editModalLabel">Edit Profile</h5>
         <button
           type="button"
           class="btn-close"
@@ -99,6 +99,47 @@
       </div>
       <div class="modal-footer">
         <button type="button" id="save-btn" class="btn btn-primary">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="feedbackModal"
+  tabindex="-1"
+  aria-labelledby="feedbackModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content feedback-modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-primary" id="feedbackModalLabel">Provide Feedback</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="feedback-form">
+          <div class="mb-3">
+            <label for="comment" class="form-label text-primary"
+              >Comment</label
+            >
+            <textarea
+              class="form-control no-glow"
+              id="comment"
+            ></textarea>
+          </div>
+          <input type="hidden" id="user-id" />
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="send-btn" class="btn btn-primary">
           Save
         </button>
       </div>
