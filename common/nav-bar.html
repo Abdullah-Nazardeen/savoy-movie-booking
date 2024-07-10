@@ -15,6 +15,12 @@
         class="form-control no-glow"
         placeholder="Search..."
       />
+      <select title="categories" class="form-select no-glow d-none" id="categories">
+      </select>
+      <select title="languages" class="form-select no-glow d-none" id="languages">>
+      </select>
+      <select title="actors" class="form-select no-glow d-none" id="actors">
+      </select>
     </form>
     <div class="nav-links">
       <a href="/savoy-movie-booking/about.html" class="nav-link">About</a>
@@ -36,7 +42,9 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content user-modal-content">
       <div class="modal-header">
-        <h5 class="modal-title text-primary" id="editModalLabel">Edit Profile</h5>
+        <h5 class="modal-title text-primary" id="editModalLabel">
+          Edit Profile
+        </h5>
         <button
           type="button"
           class="btn-close"
@@ -116,7 +124,9 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content feedback-modal-content">
       <div class="modal-header">
-        <h5 class="modal-title text-primary" id="feedbackModalLabel">Provide Feedback</h5>
+        <h5 class="modal-title text-primary" id="feedbackModalLabel">
+          Provide Feedback
+        </h5>
         <button
           type="button"
           class="btn-close"
@@ -127,13 +137,8 @@
       <div class="modal-body">
         <form id="feedback-form">
           <div class="mb-3">
-            <label for="comment" class="form-label text-primary"
-              >Comment</label
-            >
-            <textarea
-              class="form-control no-glow"
-              id="comment"
-            ></textarea>
+            <label for="comment" class="form-label text-primary">Comment</label>
+            <textarea class="form-control no-glow" id="comment"></textarea>
           </div>
           <input type="hidden" id="user-id" />
         </form>
@@ -155,11 +160,19 @@
 >
   <div class="offcanvas-header">
     <h5 class="offcanvas-title" id="offcanvasDarkLabel">Ticket's</h5>
-    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <button
+      type="button"
+      class="btn-close btn-close-white"
+      data-bs-dismiss="offcanvas"
+      aria-label="Close"
+    ></button>
   </div>
   <div class="offcanvas-body">
     <p>Place offcanvas content here.</p>
   </div>
 </div>
 
-<div id="toast-placeholder" class="position-fixed top-0 start-50 translate-middle-x p-3"></div>
+<div
+  id="toast-placeholder"
+  class="position-fixed top-0 start-50 translate-middle-x p-3"
+></div>

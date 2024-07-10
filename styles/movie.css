@@ -46,8 +46,6 @@ body {
 .movie-by-date-title-container {
   display: flex;
   justify-content: space-between;
-  color: white;
-  font-weight: bold;
 }
 
 .movie-by-date-list {
@@ -71,6 +69,8 @@ body {
 
 .date-title {
   font-weight: 600 !important;
+  color: white;
+  font-weight: bold;
 }
 
 .movie-card {

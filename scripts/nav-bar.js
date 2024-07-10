@@ -14,13 +14,55 @@ document.addEventListener("DOMContentLoaded", function () {
     "nav-container",
     "http://localhost/savoy-movie-booking/common/nav-bar.html"
   );
-  const currentPath = window.location.pathname.split("/").pop();
 
   setTimeout(() => {
     loadHTML(
       "toast-placeholder",
       "http://localhost/savoy-movie-booking/common/toast.html"
     );
+
+    const currentPath = window.location.pathname.split("/").pop();
+
+    // Check if the current URL is the search page
+    if (
+      window.location.href ===
+      "http://localhost/savoy-movie-booking/search.html"
+    ) {
+      // Add class 'search' to the middle-nav element
+      const middleNav = document.querySelector(".nav-middle");
+      middleNav.classList.add("search");
+
+      // Add class 'd-none' to the nav-links element
+      const navLinks = document.querySelector(".nav-links");
+      navLinks.classList.add("d-none");
+
+      // Remove class 'form-select' from the select elements
+      const selectElements = document.querySelectorAll(".form-select");
+      selectElements.forEach((select) => select.classList.remove("d-none"));
+
+      // Populate the select fields with values from the API
+      populateSelectField(
+        "http://localhost/savoy-movie-booking/api/category.php",
+        "#categories",
+        "Category"
+      );
+      populateSelectField(
+        "http://localhost/savoy-movie-booking/api/language.php",
+        "#languages",
+        "Language"
+      );
+      populateSelectField(
+        "http://localhost/savoy-movie-booking/api/actor.php",
+        "#actors",
+        "Actor"
+      );
+    } else {
+      document.querySelector(".search-bar").addEventListener("click", () => {
+        window.location.href =
+          "http://localhost/savoy-movie-booking/search.html";
+      });
+    }
+
     const navLinks = document.querySelectorAll(".nav-link");
     navLinks.forEach((link) => {
       const linkPath = link.getAttribute("href").split("/").pop();
@@ -48,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
         id="nav-tickets"
       >
         <path
-          d="M0 4.5A1.5 1.5 0 0 1 1.5 3h13A1.5 1.5 0 0 1 16 4.5V6a.5.5 0 0 1-.5.5 1.5 1.5 0 0 0 0 3 .5.5 0 0 1 .5.5v1.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5V10a.5.5 0 0 1 .5-.5 1.5 1.5 0 1 0 0-3A.5.5 0 0 1 0 6zm4-1v1h1v-1zm1 3v-1H4v1zm7 0v-1h-1v1zm-1-2h1v-1h-1zm-6 3H4v1h1zm7 1v-1h-1v1zm-7 1H4v1h1zm7 1v-1h-1v1zm-8 1v1h1v-1zm7 1h1v-1h-1z"
+          d="M0 4.5A1.5 1.5 0 0 1 1.5 3h13A1.5 1.5 0 0 1 16 4.5V6a.5.5 0 0 1-.5.5 1.5 1.5 0 0 0 0 3 .5.5 0 0 1 .5.5v1.5a.5.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 11.5V10a.5.5 0 0 1 .5-.5 1.5 1.5 0 1 0 0-3A.5.5 0 0 1 0 6zm4-1v1h1v-1zm1 3v-1H4v1zm7 0v-1h-1v1zm-1-2h1v-1h-1zm-6 3H4v1h1zm7 1v-1h-1v1zm-7 1H4v1h1zm7 1v-1h-1v1zm-8 1v1h1v-1zm7 1h1v-1h-1z"
         />
       </svg>`
           : "<a href='/savoy-movie-booking/dashboard/movies.html' class='nav-link'>Dashboard</a>"
@@ -353,4 +395,33 @@ function openOffcanvas() {
     document.getElementById("offcanvasDark")
   );
   offcanvas.show();
+}
+
+function populateSelectField(apiUrl, selectId, label) {
+  fetch(apiUrl)
+    .then((response) => response.json())
+    .then((data) => {
+      const select = document.querySelector(selectId);
+      const allOption = document.createElement("option");
+      const labelOption = document.createElement("option");
+      labelOption.value = "";
+      labelOption.textContent = label;
+      labelOption.selected = true;
+      labelOption.disabled = true;
+      allOption.value = "";
+      allOption.textContent = "All";
+      select.appendChild(labelOption);
+      select.appendChild(allOption);
+      if (select && data && data.data) {
+        data.data.forEach((item) => {
+          const option = document.createElement("option");
+          option.value = item.id;
+          option.textContent = item.name;
+          select.appendChild(option);
+        });
+      }
+    })
+    .catch((error) =>
+      console.error(`Error fetching data from ${apiUrl}:`, error)
+    );
 }
