@@ -89,7 +89,7 @@ function displayStaffs(staffs) {
 function filterStaffs() {
   const query = searchInput.value.toLowerCase();
   const filteredStaffs = staffs.filter((staff) =>
-    staff.name.toLowerCase().includes(query)
+    staff.username.toLowerCase().includes(query)
   );
   displayStaffs(filteredStaffs);
 }

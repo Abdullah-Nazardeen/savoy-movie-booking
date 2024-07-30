@@ -79,7 +79,7 @@ function displayCustomers(customers) {
 function filterCustomers() {
   const query = searchInput.value.toLowerCase();
   const filteredCustomers = customers.filter((customer) =>
-    customer.name.toLowerCase().includes(query)
+    customer.username.toLowerCase().includes(query)
   );
   displayCustomers(filteredCustomers);
 }

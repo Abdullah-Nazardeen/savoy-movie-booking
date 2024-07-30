@@ -254,7 +254,7 @@ setTimeout(() => {
       saveUserProfile();
     });
   }
-}, 300);
+}, 600);
 
 function saveUserProfile() {
   const email = document.getElementById("user-email").value;

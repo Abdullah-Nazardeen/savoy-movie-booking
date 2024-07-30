@@ -172,12 +172,13 @@ body {
   .section h2 {
     margin-bottom: 20px;
     font-weight: bold;
-    color: #5c3c7b;
+    color: white;
   }
 
   .section p {
     margin-bottom: 10px;
     line-height: 1.6;
+    color: white;
   }
 
   .image-gallery {
@@ -192,6 +193,9 @@ body {
     border-radius: 8px;
   }
 
+  li {
+    color: white;
+  }
   .contact-info {
     list-style: none;
     padding: 0;
@@ -199,9 +203,10 @@ body {
 
   .contact-info li {
     margin-bottom: 10px;
+    color: white;
   }
 
   .contact-info li i {
     margin-right: 10px;
-    color: #5c3c7b;
+    color: white;
   }

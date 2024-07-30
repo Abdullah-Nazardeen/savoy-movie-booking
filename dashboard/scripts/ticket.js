@@ -90,7 +90,7 @@ function displayTicket(ticket) {
 function filterTicket() {
   const query = searchInput.value.toLowerCase();
   const filteredTicket = ticket.filter((ticket) =>
-    ticket.name.toLowerCase().includes(query)
+    ticket.user_email.toLowerCase().includes(query)
   );
   displayTicket(filteredTicket);
 }

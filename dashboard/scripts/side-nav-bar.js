@@ -17,6 +17,12 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
+    const auth = JSON.parse(localStorage.getItem("savoy-auth"));
+
+    if(auth.user_level !== "admin") {
+      document.querySelector("#nav-staffs").classList.add("d-none")
+    }
+
     const logoutBtn = document.getElementById("logout-btn");
 
     logoutBtn.addEventListener("click", () => {
